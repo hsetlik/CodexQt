@@ -104,6 +104,7 @@ public slots:
 
 
 signals:
+    void returnNewPairCards(std::vector<PhrasePairCards>& cards);
 
 private slots:
     void on_prevButton_clicked();
@@ -112,9 +113,12 @@ private slots:
 
     void on_fullBox_stateChanged(int arg1);
 
+    void on_finishButton_clicked();
+
 private:
     std::vector<PhrasePair> allPairs;
     std::unique_ptr<PhrasePairWidget> currentPhrasePair;
+    std::vector<PhrasePairCards> createdCardSets;
     int pairIndex;
     int totalCardsAdded;
     Ui::InputForm* ui;

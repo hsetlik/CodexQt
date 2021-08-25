@@ -11,6 +11,7 @@ CONFIG += c++11
 SOURCES += \
     cardstructure.cpp \
     datastructures.cpp \
+    deckwidget.cpp \
     inputwidget.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
 HEADERS += \
     cardstructure.h \
     datastructures.h \
+    deckwidget.h \
     inputwidget.h \
     mainwindow.h \
     masterstackedwidget.h \
@@ -28,6 +30,7 @@ HEADERS += \
     stlutility.h
 
 FORMS += \
+    deckwidget.ui \
     inputform.ui \
     mainwindow.ui \
     phraseinputform.ui

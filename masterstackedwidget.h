@@ -5,6 +5,7 @@
 #include <QStackedWidget>
 #include "inputwidget.h"
 #include "phraseinputform.h"
+#include "deckwidget.h"
 /*
  * Pages and indeces:
  * 0: phrase input
@@ -18,6 +19,9 @@ public:
     explicit MasterStackedWidget(QWidget *parent = nullptr);
 private slots:
     void switchToCardEditors();
+    void switchToPhraseInput();
+public slots:
+    void finishAddingCards(std::vector<PhrasePairCards>& newPairs);
 
 
 signals:

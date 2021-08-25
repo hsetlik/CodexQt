@@ -195,11 +195,14 @@ void TPhraseWidget::dropEvent(QDropEvent *event)
     auto sTarget = child->text().toStdString();
     auto sNative = event->mimeData()->text().toStdString();
     printf("Adding target: %s, native: %s\n", sTarget.c_str(), sNative.c_str());
-    linkedPair->addNtaPair(sNative, sTarget);
+    if(!containsWord(sNative))
+        linkedPair->addNtaPair(sNative, sTarget);
 }
 QPointF TPhraseWidget::getConnectionPointFor(std::string word)
 {
     auto label = labelWidget(word);
+    if(label == nullptr)
+        return QPointF(0.0f, 0.0f);
     float x0 = (float)label->x() + label->width() / 2;
     float y0 = (float)label->y() - label->height() * 0.05f;
     return QPointF(x0, y0) + QPointF(pos());
@@ -283,7 +286,7 @@ InputWidget::InputWidget(QWidget *parent) :
     ui->setupUi(this);
     pairIndex = -1;
     advancePhrasePair();
-    //adding a commment
+    ui->finishButton->setVisible(false);
 }
 
 void InputWidget::advancePhrasePair()
@@ -298,6 +301,10 @@ void InputWidget::advancePhrasePair()
     ui->verticalLayout->addWidget(&*currentPhrasePair);
     std::string currentCards = "Cards Added: " + std::to_string(totalCardsAdded);
     ui->numCardsLabel->setText(currentCards.c_str());
+    if(pairIndex == (int)allPairs.size() - 1)
+        ui->finishButton->setVisible(true);
+    else
+        ui->finishButton->setVisible(false);
 }
 void InputWidget::prepareEditorsFor(std::vector<PhrasePair>& pairs)
 {
@@ -314,6 +321,7 @@ void InputWidget::on_prevButton_clicked()
         return;
     --pairIndex;
     totalCardsAdded -= currentPhrasePair->linkedPair->getNumCards();
+    createdCardSets.pop_back();
     ui->verticalLayout->removeWidget(&*currentPhrasePair);
     printf("Displaying Pair Number %d\n", pairIndex);
     auto& pairToAdd = allPairs[pairIndex];
@@ -333,3 +341,8 @@ void InputWidget::on_fullBox_stateChanged(int)
     allPairs[pairIndex].toggleIncludeFull();
 }
 
+
+void InputWidget::on_finishButton_clicked()
+{
+    emit returnNewPairCards(createdCardSets);
+}

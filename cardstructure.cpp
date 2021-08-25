@@ -66,7 +66,8 @@ QJsonObject FullCard::getJson()
     return obj;
 }
 PhrasePairCards::PhrasePairCards(PhrasePair* pair) :
-    linkedPair(pair)
+    linkedPair(pair),
+    full(nullptr)
 {
     for(auto& nta : linkedPair->ntaPairs)
     {
@@ -76,6 +77,9 @@ PhrasePairCards::PhrasePairCards(PhrasePair* pair) :
     {
         clozeCards.push_back(ClozeCard(cloze, linkedPair));
     }
+    if(linkedPair->includesFull())
+        full = new FullCard(linkedPair);
+
 }
 
 QJsonArray PhrasePairCards::getNtaJsons()
@@ -111,5 +115,10 @@ void PhrasePairCards::appendToDeckArray(QJsonArray &array)
     for(int i = 0; i < clozes.size(); ++i)
     {
         array.append(clozes[i]);
+    }
+    if(full != nullptr)
+    {
+        auto fullJson = full->getJson();
+        array.append(fullJson);
     }
 }
