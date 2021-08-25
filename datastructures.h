@@ -64,6 +64,7 @@ class PhrasePair
 {
 public:
     PhrasePair(std::string nativeFull, std::string targetFull);
+    PhrasePair(const PhrasePair& other);
     Phrase nativePhrase;
     Phrase targetPhrase;
     void addListener(PhrasePairListener* list) {listeners.push_back(list); }

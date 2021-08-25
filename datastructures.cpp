@@ -6,6 +6,12 @@ PhrasePair::PhrasePair(std::string native, std::string target) :
 
 }
 
+PhrasePair::PhrasePair(const PhrasePair& other) :
+    nativePhrase(other.nativePhrase.fullPhrase, this),
+    targetPhrase(other.targetPhrase.fullPhrase, this)
+{
+}
+
 void PhrasePair::addNtaPair(std::string nativeString, std::string targetString)
 {
     ntaPairs[nativeString] = targetString;

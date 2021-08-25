@@ -18,7 +18,7 @@ public:
     bool operator==(const WordLabel& other) {return (text() == other.text() && linkedPair == other.linkedPair); }
     bool fromSamePhrase(const WordLabel& other) {return (linkedPair == other.linkedPair); }
 };
-
+//==========================================================================================
 class PhraseWidget : public QWidget
 {
 public:
@@ -33,14 +33,13 @@ public:
 private:
     std::vector<QLabel*> addedLabels;
 protected:
-    void dragEnterEvent(QDragEnterEvent *event) override {}
-    void dragMoveEvent(QDragMoveEvent *event) override {}
-    void dropEvent(QDropEvent *event) override {}
-    void mousePressEvent(QMouseEvent *event) override {}
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dragMoveEvent(QDragMoveEvent *event) override;
 signals:
 
 };
-
+//==========================================================================================
+//Subclasses for native & target phrases. Constructors don't change, only the 3 virtual functions are different
 class NPhraseWidget : public PhraseWidget
 {
 public:
@@ -58,19 +57,22 @@ public:
     void mousePressEvent(QMouseEvent *event) override;
     QPointF getConnectionPointFor(std::string word) override;
 };
-
-class PhrasePairWidget : public QWidget
+//==========================================================================================
+class PhrasePairWidget :
+        public QWidget,
+        public PhrasePairListener
 {
     Q_OBJECT
 public:
     explicit PhrasePairWidget(PhrasePair* pair, QWidget* parent);
+    void phraseChanged(PhrasePair* changed) override {repaint(); }
+    void paintEvent(QPaintEvent* event) override;
     PhrasePair* const linkedPair;
 private:
     NPhraseWidget* nativePhrase;
     TPhraseWidget* targetPhrase;
-
 };
-
+//==========================================================================================
 namespace Ui
 {
 class InputForm;
@@ -81,14 +83,22 @@ class InputWidget : public QWidget
     Q_OBJECT
 public:
     explicit InputWidget(QWidget *parent = nullptr);
+    void advancePhrasePair();
 public slots:
     void prepareEditorsFor(std::vector<PhrasePair>& pairs);
 
 
 signals:
 
+private slots:
+    void on_prevButton_clicked();
+
+    void on_nextButton_clicked();
+
 private:
     std::vector<PhrasePair> allPairs;
+    std::unique_ptr<PhrasePairWidget> currentPhrasePair;
+    int pairIndex;
     Ui::InputForm* ui;
 };
 

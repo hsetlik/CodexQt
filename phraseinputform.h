@@ -28,6 +28,7 @@ signals:
 private:
     Ui::PhraseInputForm *ui;
     std::vector<PhrasePair> addedPairs;
+    void addDummyPairs(int pairsToAdd = 10);
 
 };
 
