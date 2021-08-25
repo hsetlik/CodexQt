@@ -66,19 +66,16 @@ private:
     std::string answer;
 };
 
-struct PhrasePairCards : public PhrasePairListener
+struct PhrasePairCards
 {
     PhrasePairCards(PhrasePair* parent);
     PhrasePair* const linkedPair;
     std::vector<NtaCard> ntaCards;
     std::vector<ClozeCard> clozeCards;
+private:
+    //adds all the cards to an external array for storing a deck of multiple phrase pairs
+    void appendToDeckArray(QJsonArray& array);
+    QJsonArray getNtaJsons();
+    QJsonArray getClozeJsons();
 };
-
-
-
-
-
-
-
-
 #endif // CARDSTRUCTURE_H

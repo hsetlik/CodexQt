@@ -77,3 +77,39 @@ PhrasePairCards::PhrasePairCards(PhrasePair* pair) :
         clozeCards.push_back(ClozeCard(cloze, linkedPair));
     }
 }
+
+QJsonArray PhrasePairCards::getNtaJsons()
+{
+    QJsonArray ntaArray;
+    for(auto card : ntaCards)
+    {
+        auto newVal = QJsonValue(card.getJson());
+        ntaArray.append(newVal);
+    }
+    return ntaArray;
+}
+
+QJsonArray PhrasePairCards::getClozeJsons()
+{
+    QJsonArray clozeArray;
+    for(auto cloze : clozeCards)
+    {
+        auto newVal = QJsonValue(cloze.getJson());
+        clozeArray.append(newVal);
+    }
+    return clozeArray;
+}
+
+void PhrasePairCards::appendToDeckArray(QJsonArray &array)
+{
+    auto ntas = getNtaJsons();
+    auto clozes = getClozeJsons();
+    for(int i = 0; i < ntas.size(); ++i)
+    {
+        array.append(ntas[i]);
+    }
+    for(int i = 0; i < clozes.size(); ++i)
+    {
+        array.append(clozes[i]);
+    }
+}
