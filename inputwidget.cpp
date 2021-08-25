@@ -283,6 +283,7 @@ InputWidget::InputWidget(QWidget *parent) :
     ui->setupUi(this);
     pairIndex = -1;
     advancePhrasePair();
+    //adding a commment
 }
 
 void InputWidget::advancePhrasePair()
