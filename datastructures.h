@@ -1,6 +1,7 @@
 #ifndef DATASTRUCTURES_H
 #define DATASTRUCTURES_H
 #include "stlutility.h"
+#include <QString>
 
 class PhrasePair;
 
@@ -79,6 +80,7 @@ public:
     void toggleIncludeFull();
     bool includesFull() {return includeFull; }
     int getNumCards() {return totalNumCards; }
+    std::string getJsonIdString();
 private:
     void pingListeners();
     std::vector<PhrasePairListener*> listeners;

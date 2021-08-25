@@ -82,3 +82,8 @@ void PhrasePair::pingListeners()
     for(auto list : listeners)
         list->phraseChanged(this);
 }
+
+std::string PhrasePair::getJsonIdString()
+{
+     return nativePhrase.fullPhrase + targetPhrase.fullPhrase;
+}

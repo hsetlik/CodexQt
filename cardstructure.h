@@ -18,7 +18,7 @@ struct Card
         parentPair(parent),
         cardType(type)
     {
-
+        dateNextDue = QDateTime::currentDateTime();
     }
     virtual ~Card() {}
     PhrasePair* const parentPair;
@@ -28,12 +28,23 @@ struct Card
     virtual std::string getBackData() =0;
     //gives JSON object
     virtual QJsonObject getJson()=0;
+    void setDueIn(int numDays)
+    {
+        dateNextDue = dateNextDue.addDays(numDays);
+    }
+    bool isDue(QDateTime current)
+    {
+        return current >= dateNextDue;
+    }
+protected:
+    QDateTime dateNextDue;
 };
 
 struct NtaCard : public Card
 {
 public:
     NtaCard(std::string native, std::string target, PhrasePair* parent);
+    NtaCard(QJsonObject& obj, PhrasePair* parent);
     std::string getFrontData() override {return nativeWord; }
     std::string getBackData() override {return targetWord; }
     QJsonObject getJson() override;
@@ -46,6 +57,7 @@ struct ClozeCard : public Card
 {
 public:
     ClozeCard(std::string toRemove, PhrasePair* parent);
+    ClozeCard(QJsonObject& obj, PhrasePair* parent);
     std::string getFrontData() override {return clozeSentence; }
     std::string getBackData() override {return answer; }
     QJsonObject getJson() override;
@@ -58,6 +70,7 @@ struct FullCard : public Card
 {
 public:
     FullCard(PhrasePair* parent);
+    FullCard(QJsonObject& obj, PhrasePair* parent);
     std::string getFrontData() override {return question; }
     std::string getBackData() override {return answer; }
     QJsonObject getJson() override;
@@ -79,4 +92,16 @@ private:
     QJsonArray getNtaJsons();
     QJsonArray getClozeJsons();
 };
+//==============================================================
+class Deck
+{
+public:
+    Deck(std::string name = "default_deck");
+    std::vector<PhrasePairCards> phrasePairs;
+    std::vector<Card> allCards;
+    std::vector<Card> dueToday();
+private:
+    std::string deckName;
+};
+
 #endif // CARDSTRUCTURE_H
