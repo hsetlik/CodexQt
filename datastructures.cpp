@@ -1,7 +1,9 @@
 #include "datastructures.h"
 PhrasePair::PhrasePair(std::string native, std::string target) :
     nativePhrase(native, this),
-    targetPhrase(target, this)
+    targetPhrase(target, this),
+    includeFull(false),
+    totalNumCards(0)
 {
 
 }
@@ -16,6 +18,7 @@ void PhrasePair::addNtaPair(std::string nativeString, std::string targetString)
 {
     printf("Adding pair: %s, %s\n", nativeString.c_str(), targetString.c_str());
     ntaPairs[nativeString] = targetString;
+    totalNumCards++;
     pingListeners();
 }
 
@@ -26,6 +29,7 @@ void PhrasePair::removeNtaPairByNative(std::string nativeWord)
        if(it->first == nativeWord)
        {
            ntaPairs.erase(it);
+           totalNumCards--;
            pingListeners();
            return;
        }
@@ -39,6 +43,7 @@ void PhrasePair::removeNtaPairByTarget(std::string targetWord)
        if(it->second == targetWord)
        {
            ntaPairs.erase(it);
+           totalNumCards--;
            pingListeners();
            return;
        }
@@ -50,11 +55,26 @@ void PhrasePair::removeCloze(std::string word)
     {
         if(*it == word)
         {
+            totalNumCards--;
             clozeWords.erase(it);
             pingListeners();
             return;
         }
     }
+}
+bool PhrasePair::hasCloze(std::string word)
+{
+    for(auto& cWord : clozeWords)
+    {
+        if(word == cWord)
+            return true;
+    }
+    return false;
+}
+void PhrasePair::toggleIncludeFull()
+{
+    includeFull = !includeFull;
+    pingListeners();
 }
 //make sure this always gets called at the end of functions which edit card/pairing information
 void PhrasePair::pingListeners()

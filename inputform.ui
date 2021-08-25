@@ -27,9 +27,9 @@
   <widget class="QWidget" name="horizontalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>110</x>
-     <y>430</y>
-     <width>531</width>
+     <x>40</x>
+     <y>420</y>
+     <width>671</width>
      <height>80</height>
     </rect>
    </property>
@@ -47,6 +47,27 @@
        <string>Next</string>
       </property>
      </widget>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalRight">
+      <item>
+       <widget class="QLabel" name="numCardsLabel">
+        <property name="text">
+         <string>Cards Added: </string>
+        </property>
+        <property name="margin">
+         <number>1</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="fullBox">
+        <property name="text">
+         <string>Include full phrase</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>

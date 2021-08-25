@@ -7,7 +7,7 @@ void WordLabel::paintEvent(QPaintEvent *)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setRenderHint(QPainter::HighQualityAntialiasing);
-    auto brushColor = (mouseIsOver) ? hoverBackground : backgroundColor;
+    auto brushColor = (mouseIsOver) ? backgroundColor.lighter(60) : backgroundColor;
     QBrush brush(brushColor);
     auto cornerSize = (float)frameRect().height() / 5.0f;
     auto bounds = QRectF(frameRect());
@@ -146,6 +146,8 @@ void NPhraseWidget::dropEvent(QDropEvent *event)
 QPointF NPhraseWidget::getConnectionPointFor(std::string word)
 {
     auto label = labelWidget(word);
+    if(label == nullptr)
+        return QPointF(0.0f, 0.0f);
     float x0 = (float)label->x() + label->width() / 2;
     float y0 = (float)label->y() + label->height() * 1.05f;
     return QPointF(x0, y0) + QPointF(pos());
@@ -202,6 +204,29 @@ QPointF TPhraseWidget::getConnectionPointFor(std::string word)
     float y0 = (float)label->y() - label->height() * 0.05f;
     return QPointF(x0, y0) + QPointF(pos());
 }
+void TPhraseWidget::mouseDoubleClickEvent(QMouseEvent* event)
+{
+    QColor clozeColor(30, 156, 30);
+    QColor background(80, 80, 80);
+    auto wordToToggle = dynamic_cast<WordLabel*>(childAt(event->pos()));
+    if(wordToToggle == nullptr)
+        return;
+    auto qWord = wordToToggle->text();
+    auto sWord = qWord.toStdString();
+    if(wordToToggle == nullptr)
+        return;
+    if(!linkedPair->hasCloze(sWord))
+    {
+        linkedPair->addCloze(sWord);
+        wordToToggle->setBackgroundColor(clozeColor);
+    }
+    else
+    {
+        linkedPair->removeCloze(sWord);
+        wordToToggle->setBackgroundColor(background);
+    }
+    wordToToggle->repaint();
+}
 //==========================================================================================
 PhrasePairWidget::PhrasePairWidget(PhrasePair* pair, QWidget* parent) :
     QWidget(parent),
@@ -252,6 +277,7 @@ InputWidget::InputWidget(QWidget *parent) :
     QWidget(parent),
     currentPhrasePair(nullptr),
     pairIndex(0),
+    totalCardsAdded(0),
     ui(new Ui::InputForm)
 {
     ui->setupUi(this);
@@ -269,6 +295,8 @@ void InputWidget::advancePhrasePair()
     auto& pairToAdd = allPairs[pairIndex];
     currentPhrasePair.reset(new PhrasePairWidget(&pairToAdd, this));
     ui->verticalLayout->addWidget(&*currentPhrasePair);
+    std::string currentCards = "Cards Added: " + std::to_string(totalCardsAdded);
+    ui->numCardsLabel->setText(currentCards.c_str());
 }
 void InputWidget::prepareEditorsFor(std::vector<PhrasePair>& pairs)
 {
@@ -284,13 +312,23 @@ void InputWidget::on_prevButton_clicked()
     if(pairIndex < 1)
         return;
     --pairIndex;
+    totalCardsAdded -= currentPhrasePair->linkedPair->getNumCards();
     ui->verticalLayout->removeWidget(&*currentPhrasePair);
     printf("Displaying Pair Number %d\n", pairIndex);
     auto& pairToAdd = allPairs[pairIndex];
     currentPhrasePair.reset(new PhrasePairWidget(&pairToAdd, this));
     ui->verticalLayout->addWidget(&*currentPhrasePair);
+    std::string currentCards = "Cards Added: " + std::to_string(totalCardsAdded);
+    ui->numCardsLabel->setText(currentCards.c_str());
 }
 void InputWidget::on_nextButton_clicked()
 {
+    totalCardsAdded += currentPhrasePair->linkedPair->getNumCards();
     advancePhrasePair();
 }
+
+void InputWidget::on_fullBox_stateChanged(int)
+{
+    allPairs[pairIndex].toggleIncludeFull();
+}
+

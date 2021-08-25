@@ -71,13 +71,19 @@ public:
     void addNtaPair(std::string nativeWord, std::string targetString);
     void removeNtaPairByNative(std::string nativeWord);
     void removeNtaPairByTarget(std::string targetWord);
-    void addCloze(std::string word) {clozeWords.push_back(word); }
+    void addCloze(std::string word) {clozeWords.push_back(word); totalNumCards++; }
+    bool hasCloze(std::string word);
     void removeCloze(std::string word);
     std::unordered_map<std::string, std::string> ntaPairs;
     std::vector<std::string> clozeWords;
+    void toggleIncludeFull();
+    bool includesFull() {return includeFull; }
+    int getNumCards() {return totalNumCards; }
 private:
     void pingListeners();
     std::vector<PhrasePairListener*> listeners;
+    bool includeFull;
+    int totalNumCards;
 };
 
 

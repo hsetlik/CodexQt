@@ -24,7 +24,7 @@ public:
     bool operator==(const WordLabel& other) {return (text() == other.text() && linkedPair == other.linkedPair); }
     bool fromSamePhrase(const WordLabel& other) {return (linkedPair == other.linkedPair); }
     void paintEvent(QPaintEvent*) override;
-    void setBackgroundColor(QColor& newColor) {backgroundColor = newColor; }
+    void setBackgroundColor(QColor newColor) {backgroundColor = newColor; }
 private:
     void enterEvent(QEvent*) override {mouseIsOver = true; repaint(); }
     void leaveEvent(QEvent*) override {mouseIsOver = false; repaint(); }
@@ -69,6 +69,7 @@ public:
     TPhraseWidget(const QString& fullPhrase, PhrasePair* p, QWidget *parent = nullptr);
     void dropEvent(QDropEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent*) override;
     QPointF getConnectionPointFor(std::string word) override;
 };
 //==========================================================================================
@@ -109,10 +110,13 @@ private slots:
 
     void on_nextButton_clicked();
 
+    void on_fullBox_stateChanged(int arg1);
+
 private:
     std::vector<PhrasePair> allPairs;
     std::unique_ptr<PhrasePairWidget> currentPhrasePair;
     int pairIndex;
+    int totalCardsAdded;
     Ui::InputForm* ui;
 };
 
