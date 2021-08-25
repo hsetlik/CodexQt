@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PhraseInputForm</class>
+ <widget class="QWidget" name="PhraseInputForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>20</y>
+     <width>651</width>
+     <height>291</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item alignment="Qt::AlignBottom">
+     <widget class="QLabel" name="nativeLabel">
+      <property name="text">
+       <string>Native Phrase:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="nativeLineEdit"/>
+    </item>
+    <item alignment="Qt::AlignBottom">
+     <widget class="QLabel" name="targetLabel">
+      <property name="text">
+       <string>Target Phrase:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="targetLineEdit"/>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="backButton">
+        <property name="text">
+         <string>Back</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="addButton">
+        <property name="text">
+         <string>Add</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QPushButton" name="createSetupButton">
+   <property name="geometry">
+    <rect>
+     <x>540</x>
+     <y>330</y>
+     <width>181</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Go To Card Setup</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
