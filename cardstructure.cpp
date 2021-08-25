@@ -68,25 +68,12 @@ QJsonObject FullCard::getJson()
 PhrasePairCards::PhrasePairCards(PhrasePair* pair) :
     linkedPair(pair)
 {
-
-
-}
-
-void PhrasePairCards::updateCards()
-{
-    ntaCards.clear();
-    clozeCards.clear();
-    for(auto& p : linkedPair->ntaPairs)
+    for(auto& nta : linkedPair->ntaPairs)
     {
-        ntaCards.push_back(NtaCard(p.first, p.second, linkedPair));
+        ntaCards.push_back(NtaCard(nta.first, nta.second, linkedPair));
     }
-    for(auto& c : linkedPair->clozeWords)
+    for(auto & cloze : linkedPair->clozeWords)
     {
-        clozeCards.push_back(ClozeCard(c, linkedPair));
+        clozeCards.push_back(ClozeCard(cloze, linkedPair));
     }
-}
-
-void PhrasePairCards::phraseChanged(PhrasePair *changed)
-{
-    updateCards();
 }

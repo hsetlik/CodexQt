@@ -68,16 +68,13 @@ private:
 
 struct PhrasePairCards : public PhrasePairListener
 {
-    PhrasePairCards(PhrasePair* pair);
+    PhrasePairCards(PhrasePair* parent);
     PhrasePair* const linkedPair;
-    QJsonObject getAsJson();
-    void updateCards();
-    void phraseChanged(PhrasePair* changed) override;
-    //some comment
-private:
     std::vector<NtaCard> ntaCards;
     std::vector<ClozeCard> clozeCards;
 };
+
+
 
 
 

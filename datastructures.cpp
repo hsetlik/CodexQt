@@ -14,6 +14,7 @@ PhrasePair::PhrasePair(const PhrasePair& other) :
 
 void PhrasePair::addNtaPair(std::string nativeString, std::string targetString)
 {
+    printf("Adding pair: %s, %s\n", nativeString.c_str(), targetString.c_str());
     ntaPairs[nativeString] = targetString;
     pingListeners();
 }

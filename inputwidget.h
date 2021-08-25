@@ -9,14 +9,28 @@ class WordLabel : public QLabel
 {
     Q_OBJECT
 public:
-    WordLabel(std::string txt, PhrasePair* parentPair, QWidget* parentWidget) : QLabel(parentWidget), linkedPair(parentPair)
+    WordLabel(std::string txt, PhrasePair* parentPair, QWidget* parentWidget) :
+        QLabel(parentWidget),
+        linkedPair(parentPair),
+        backgroundColor(QColor(80, 80, 80)),
+        hoverBackground(QColor(100, 100, 100)),
+        mouseIsOver(false)
     {
         QString label = txt.c_str();
+        setFrameStyle(QFrame::Panel);
         setText(label);
     }
     PhrasePair* const linkedPair;
     bool operator==(const WordLabel& other) {return (text() == other.text() && linkedPair == other.linkedPair); }
     bool fromSamePhrase(const WordLabel& other) {return (linkedPair == other.linkedPair); }
+    void paintEvent(QPaintEvent*) override;
+    void setBackgroundColor(QColor& newColor) {backgroundColor = newColor; }
+private:
+    void enterEvent(QEvent*) override {mouseIsOver = true; repaint(); }
+    void leaveEvent(QEvent*) override {mouseIsOver = false; repaint(); }
+    QColor backgroundColor;
+    QColor hoverBackground;
+    bool mouseIsOver;
 };
 //==========================================================================================
 class PhraseWidget : public QWidget
@@ -65,7 +79,7 @@ class PhrasePairWidget :
     Q_OBJECT
 public:
     explicit PhrasePairWidget(PhrasePair* pair, QWidget* parent);
-    void phraseChanged(PhrasePair* changed) override {repaint(); }
+    void phraseChanged(PhrasePair*) override {repaint(); }
     void paintEvent(QPaintEvent* event) override;
     PhrasePair* const linkedPair;
 private:

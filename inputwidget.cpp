@@ -1,6 +1,25 @@
 #include "inputwidget.h"
 #include "ui_inputform.h"
 
+
+void WordLabel::paintEvent(QPaintEvent *)
+{
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::HighQualityAntialiasing);
+    auto brushColor = (mouseIsOver) ? hoverBackground : backgroundColor;
+    QBrush brush(brushColor);
+    auto cornerSize = (float)frameRect().height() / 5.0f;
+    auto bounds = QRectF(frameRect());
+    painter.setBrush(brush);
+    painter.drawRoundedRect(bounds, cornerSize, cornerSize);
+    QPen pen(Qt::white, 1.8f, Qt::SolidLine, Qt::RoundCap, Qt::BevelJoin);
+    painter.setPen(pen);
+    auto textCorner = QPointF(cornerSize, cornerSize * 3.3f);
+    painter.drawText(textCorner, text());
+}
+
+//==========================================================================================
 PhraseWidget::PhraseWidget(const QString& fullPhrase, PhrasePair* p, QWidget *parent) :
     QWidget(parent),
     linkedPair(p)
@@ -144,8 +163,8 @@ void TPhraseWidget::mousePressEvent(QMouseEvent *event)
         return;
     if(event->button() == Qt::RightButton)
     {
-        auto nativeWord = child->text().toStdString();
-        linkedPair->removeNtaPairByNative(nativeWord);
+        auto targetWord = child->text().toStdString();
+        linkedPair->removeNtaPairByTarget(targetWord);
     }
     else
     {
@@ -198,6 +217,7 @@ PhrasePairWidget::PhrasePairWidget(PhrasePair* pair, QWidget* parent) :
     auto layout = new QVBoxLayout;
     layout->addWidget(nativePhrase);
     layout->addWidget(targetPhrase);
+    //layout->setAlignment(Qt::AlignCenter);
     setLayout(layout);
 }
 
@@ -206,7 +226,7 @@ void PhrasePairWidget::paintEvent(QPaintEvent *)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setRenderHint(QPainter::HighQualityAntialiasing);
-    QPen pen(Qt::blue, 1.8f, Qt::SolidLine, Qt::RoundCap, Qt::BevelJoin);
+    QPen pen(QColor(80, 80, 80), 1.8f, Qt::SolidLine, Qt::RoundCap, Qt::BevelJoin);
     painter.setPen(pen);
     auto& pairs = linkedPair->ntaPairs;
     for(auto& p : pairs)
