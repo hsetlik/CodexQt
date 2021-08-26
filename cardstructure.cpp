@@ -226,6 +226,9 @@ Deck::Deck(std::string name) :
     {
         printf("File: %s exists\n", loadFile.fileName().toStdString().c_str());
     }
+    QFileInfo info(loadFile);
+    auto fullPath = info.absoluteFilePath().toStdString();
+    printf("FULL FILE PATH: %s\n", fullPath.c_str());
     QByteArray deckData = loadFile.readAll();
     printf("File has size: %d bytes\n", deckData.size());
     QJsonDocument doc(QJsonDocument::fromJson(deckData));
@@ -275,9 +278,9 @@ void Deck::addPhrasePairFrom(QJsonObject &obj)
     phrasePairs.push_back(newPair);
     newPair.addAllToVector(allCards);
 }
-std::deque<Card*> Deck::dueToday()
+std::vector<Card*> Deck::dueToday()
 {
-    std::deque<Card*> due;
+    std::vector<Card*> due;
     auto date = QDateTime::currentDateTime();
     for(int i = 0; i < (int)allCards.size(); ++i)
     {

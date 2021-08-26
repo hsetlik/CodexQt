@@ -23,7 +23,7 @@ class NtaContent : public CardContent
 {
     Q_OBJECT
 public:
-    explicit NtaContent(NtaCard* card, QWidget* parent = nullptr);
+    explicit NtaContent(Card* card, QWidget* parent = nullptr);
     void flip(std::string answer="null") override;
 private:
     QString targetStr;
@@ -36,7 +36,7 @@ class ClozeContent : public CardContent
 {
     Q_OBJECT
 public:
-    explicit ClozeContent(ClozeCard* card, QWidget* parent=nullptr);
+    explicit ClozeContent(Card* card, QWidget* parent=nullptr);
     void flip(std::string answer="null") override;
 private:
     std::vector<QLabel*> labels;
@@ -61,7 +61,10 @@ struct CardContentGenerator
         if(card->cardType == CardType::NTA)
             return new NtaContent(dynamic_cast<NtaCard*>(card), parent);
         else if(card->cardType == CardType::Cloze)
-            return new ClozeContent(dynamic_cast<ClozeCard*>(card), parent);
+        {
+            auto pCloze = dynamic_cast<ClozeCard*>(card);
+            return new ClozeContent(pCloze, parent);
+        }
         else
             return new FullContent(dynamic_cast<FullCard*>(card), parent);
     }
@@ -75,7 +78,7 @@ class CardWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit CardWidget(Deck* deck, std::deque<Card*>& cards, QWidget *parent = nullptr);
+    explicit CardWidget(Deck* deck, std::vector<Card*> cards, QWidget *parent = nullptr);
     Deck* const linkedDeck;
     void nextCard();
     ~CardWidget();
@@ -91,9 +94,10 @@ private slots:
     void on_nextButton_clicked();
 
 private:
+    void updateContent();
     Ui::CardWidget *ui;
     std::unique_ptr<CardContent> currentContent;
-    std::deque<Card*>& cardsDue;
+    std::vector<Card*> cardsDue;
 };
 
 #endif // CARDWIDGET_H

@@ -5,14 +5,16 @@ CardContent::CardContent(Card* c, QWidget* parent) :
     QWidget(parent),
     linkedCard(c)
 {
+    printf("Creating card content\n");
 
 }
 //===========================================================================
-NtaContent::NtaContent(NtaCard* card, QWidget* parent) :
+NtaContent::NtaContent(Card* card, QWidget* parent) :
     CardContent(card, parent),
     targetLabel(nullptr),
     nativeLabel(nullptr)
 {
+    printf("Creating NTA content. . .");
     targetStr = card->getFrontData().c_str();
     nativeStr = card->getFrontData().c_str();
     targetLabel = new QLabel(targetStr);
@@ -31,10 +33,12 @@ void NtaContent::flip(std::string answer)
     nativeLabel->setVisible(true);
 }
 //===========================================================================
-ClozeContent::ClozeContent(ClozeCard* card, QWidget* parent) :
-    CardContent(card, parent),
+ClozeContent::ClozeContent(Card* _card, QWidget* parent) :
+    CardContent(_card, parent),
     clozeBox(nullptr)
 {
+    auto card = dynamic_cast<ClozeCard*>(_card);
+    printf("Creating cloze content. . . \n");
     auto allWords = stdu::matchesAsVector(card->getFullTarget(), std::regex("\\w+"));
     auto clozeWord = card->getBackData();
     int x= 5;
@@ -102,7 +106,7 @@ void FullContent::flip(std::string answer)
     fullNative->setVisible(true);
 }
 //===========================================================================
-CardWidget::CardWidget(Deck* deck, std::deque<Card*>& cards, QWidget *parent) :
+CardWidget::CardWidget(Deck* deck, std::vector<Card*> cards, QWidget *parent) :
     QWidget(parent),
     linkedDeck(deck),
     ui(new Ui::CardWidget),
@@ -110,20 +114,22 @@ CardWidget::CardWidget(Deck* deck, std::deque<Card*>& cards, QWidget *parent) :
     cardsDue(cards)
 {
     ui->setupUi(this);
-    //ui->contentVBox->addWidget(&*currentContent);
+    nextCard();
 }
 
 void CardWidget::nextCard()
 {
-    auto nextCard = cardsDue.front();
-    cardsDue.pop_front();
-    if(currentContent != nullptr)
+    if(!currentContent)
     {
-        currentContent.reset(CardContentGenerator::getContentFor(nextCard, this));
+        updateContent();
         ui->contentVBox->addWidget(&*currentContent);
     }
     else
-        currentContent.reset(CardContentGenerator::getContentFor(nextCard, this));
+    {
+        ui->contentVBox->removeWidget(&*currentContent);
+        updateContent();
+        ui->contentVBox->addWidget(&*currentContent);
+    }
     currentContent->setVisible(true);
     ui->nextButton->setVisible(false);
 }
@@ -160,4 +166,21 @@ void CardWidget::on_nextButton_clicked()
 {
     nextCard();
 }
-
+void CardWidget::updateContent()
+{
+    auto next = cardsDue[0];
+    if(!next)
+    {
+        printf("Card not valid\n");
+        return;
+    }
+    if(next->cardType == CardType::NTA)
+        currentContent.reset(new NtaContent(next, this));
+    else if(next->cardType == CardType::Cloze)
+    {
+        currentContent.reset(new ClozeContent(next, this));
+    }
+    else
+        currentContent.reset(new FullContent(dynamic_cast<FullCard*>(next), this));
+    cardsDue.erase(cardsDue.begin());
+}

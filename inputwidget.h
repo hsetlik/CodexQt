@@ -104,7 +104,7 @@ public slots:
     void prepareEditorsFor(std::vector<PhrasePair>& pairs);
 
 signals:
-    void returnNewPairCards(std::vector<PhrasePairCards>& cards);
+    void returnNewPairCards(std::vector<PhrasePairCards> cards);
 
 private slots:
     void on_prevButton_clicked();

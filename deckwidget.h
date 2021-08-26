@@ -19,9 +19,7 @@ public:
     ~DeckWidget();
 signals:
     void goToInputScreen();
-    void studyScreenWith(std::deque<Card*>& cardPointers);
-
-
+    void studyScreenWith(std::vector<Card*> cardPointers);
 private slots:
     void on_addButton_clicked();
 

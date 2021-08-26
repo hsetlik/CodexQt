@@ -29,14 +29,14 @@ void MasterStackedWidget::switchToCardEditors()
 {
     setCurrentIndex(2);
 }
-void MasterStackedWidget::switchToStudyView(std::deque<Card*>& cards)
+void MasterStackedWidget::switchToStudyView(std::vector<Card*> cards)
 {
     studyView.reset(new CardWidget(&*currentDeck, cards, this));
     if(!stackContains(&*studyView))
         addWidget(&*studyView);
     setCurrentWidget(&*studyView);
 }
-void MasterStackedWidget::finishAddingCards(std::vector<PhrasePairCards>& pairs)
+void MasterStackedWidget::finishAddingCards(std::vector<PhrasePairCards> pairs)
 {
     printf("master widget received cards\n");
     if(currentDeck == nullptr)

@@ -131,7 +131,7 @@ public:
     void addPhrasePairFrom(QJsonObject& obj);
     std::vector<PhrasePairCards> phrasePairs;
     std::vector<Card> allCards;
-    std::deque<Card*> dueToday();
+    std::vector<Card*> dueToday();
     int numDueToday();
     void addNewPairs(std::vector<PhrasePairCards>& newPairs);
     void saveToFile();
