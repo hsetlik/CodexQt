@@ -102,14 +102,15 @@ void FullContent::flip(std::string answer)
     fullNative->setVisible(true);
 }
 //===========================================================================
-CardWidget::CardWidget(Deck* deck, QWidget *parent) :
+CardWidget::CardWidget(Deck* deck, std::deque<Card*>& cards, QWidget *parent) :
     QWidget(parent),
     linkedDeck(deck),
     ui(new Ui::CardWidget),
-    currentContent(nullptr)
+    currentContent(nullptr),
+    cardsDue(cards)
 {
     ui->setupUi(this);
-    cardsDue = linkedDeck->dueToday();
+    //ui->contentVBox->addWidget(&*currentContent);
 }
 
 void CardWidget::nextCard()
@@ -117,9 +118,14 @@ void CardWidget::nextCard()
     auto nextCard = cardsDue.front();
     cardsDue.pop_front();
     if(currentContent != nullptr)
-        currentContent->setVisible(false);
-    currentContent.reset(CardContentGenerator::getContentFor(nextCard, this));
+    {
+        currentContent.reset(CardContentGenerator::getContentFor(nextCard, this));
+        ui->contentVBox->addWidget(&*currentContent);
+    }
+    else
+        currentContent.reset(CardContentGenerator::getContentFor(nextCard, this));
     currentContent->setVisible(true);
+    ui->nextButton->setVisible(false);
 }
 CardWidget::~CardWidget()
 {
@@ -127,18 +133,31 @@ CardWidget::~CardWidget()
 }
 void CardWidget::on_button1_clicked()
 {
-
+    if(currentContent !=nullptr)
+    {
+        auto toRepeat = currentContent->linkedCard;
+        cardsDue.push_back(toRepeat);
+        currentContent->flip("0");
+        ui->nextButton->setVisible(true);
+    }
 }
 void CardWidget::on_button2_clicked()
 {
-
+    currentContent->flip("1");
+    ui->nextButton->setVisible(true);
 }
 void CardWidget::on_button3_clicked()
 {
-
+    currentContent->flip("2");
+    ui->nextButton->setVisible(true);
 }
 void CardWidget::on_button4_clicked()
 {
-
+    currentContent->flip("3");
+    ui->nextButton->setVisible(true);
+}
+void CardWidget::on_nextButton_clicked()
+{
+    nextCard();
 }
 

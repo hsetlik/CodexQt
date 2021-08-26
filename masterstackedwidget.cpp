@@ -2,9 +2,14 @@
 
 MasterStackedWidget::MasterStackedWidget(QWidget *parent) :
     QStackedWidget(parent),
-    currentDeck(nullptr)
+    currentDeck(nullptr),
+    studyView(nullptr)
 {
     currentDeck.reset(new Deck());
+    //! note this is only here for debuging
+    currentDeck->pushBackDueDates(3);
+    auto cardsDue = currentDeck->numDueToday();
+    printf("%d cards due today\n", cardsDue);
     auto deckScreen = new DeckWidget(&*currentDeck, this);
     addWidget(deckScreen);
     auto phraseInputForm = new PhraseInputForm(this);
@@ -17,21 +22,27 @@ MasterStackedWidget::MasterStackedWidget(QWidget *parent) :
     QObject::connect(phraseInputForm, &PhraseInputForm::getPairList, editorWidget, &InputWidget::prepareEditorsFor);
     QObject::connect(phraseInputForm, &PhraseInputForm::getPairList, this, &MasterStackedWidget::switchToCardEditors);
     QObject::connect(editorWidget, &InputWidget::returnNewPairCards, this, &MasterStackedWidget::finishAddingCards);
+    QObject::connect(deckScreen, &DeckWidget::studyScreenWith, this, &MasterStackedWidget::switchToStudyView);
 }
 
 void MasterStackedWidget::switchToCardEditors()
 {
     setCurrentIndex(2);
 }
-
+void MasterStackedWidget::switchToStudyView(std::deque<Card*>& cards)
+{
+    studyView.reset(new CardWidget(&*currentDeck, cards, this));
+    if(!stackContains(&*studyView))
+        addWidget(&*studyView);
+    setCurrentWidget(&*studyView);
+}
 void MasterStackedWidget::finishAddingCards(std::vector<PhrasePairCards>& pairs)
 {
     printf("master widget received cards\n");
-    //do the logic to actually add cards to the deck somewhere in here
-    setCurrentIndex(0); //go back to the deck view
     if(currentDeck == nullptr)
         currentDeck.reset(new Deck());
     currentDeck->addNewPairs(pairs);
+    setCurrentIndex(0); //go back to the deck view
 }
 
 void MasterStackedWidget::switchToPhraseInput()

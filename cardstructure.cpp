@@ -16,6 +16,7 @@ NtaCard::NtaCard(QJsonObject& obj) :
     auto qTarget = obj["TargetWord"].toString();
     targetWord = qTarget.toStdString();
     auto qDateString = obj["DateNextDue"].toString();
+    printf("Date next due: %s\n", qDateString.toStdString().c_str());
     dateNextDue = QDateTime::fromString(qDateString);
 }
 ClozeCard::ClozeCard(std::string toRemove, PhrasePair* parent) :
@@ -124,18 +125,24 @@ PhrasePairCards::PhrasePairCards(PhrasePair* pair) :
 PhrasePairCards::PhrasePairCards(QJsonObject& obj) :
     full(nullptr)
 {
+    printf("Creating pair with JSON\n");
     pairId = obj["PhrasePairId"].toString().toStdString();
     fullNative = obj["NativePhrase"].toString().toStdString();
     fullTarget = obj["TargetPhrase"].toString().toStdString();
-    for(auto nta : obj["NtaCards"].toObject())
+    auto ntaArray = obj["NtaCards"].toArray();
+    for(int i = 0; i < ntaArray.size(); ++i)
     {
-        auto ntaObject = nta.toObject();
+        printf("Adding Nta Card\n");
+        auto ntaObject = ntaArray.at(i).toObject();
         ntaCards.push_back(NtaCard(ntaObject));
     }
-    for(auto cloze : obj["ClozeCards"].toObject())
+    auto clozeArray = obj["ClozeCards"].toArray();
+    for(int i = 0; i < clozeArray.size(); ++i)
     {
-        auto clozeObject = cloze.toObject();
+        printf("adding cloze card\n");
+        auto clozeObject = clozeArray.at(i).toObject();
         clozeCards.push_back(ClozeCard(clozeObject));
+
     }
     if(obj.contains("FullCard"))
     {
@@ -196,10 +203,10 @@ QJsonObject PhrasePairCards::getPairJson()
     {
         {"PhrasePairId", pairId.c_str()},
         {"NativePhrase", fullNative.c_str()},
-        {"TargetPhrase", fullTarget.c_str()},
-        {"NtaCards", getNtaJsons()},
-        {"ClozeCards", getClozeJsons()}
+        {"TargetPhrase", fullTarget.c_str()}
     };
+    obj["NtaCards"] = getNtaJsons();
+    obj["ClozeCards"] = getClozeJsons();
     if(full != nullptr)
         obj["FullCard"] = full->getJson();
     return obj;
@@ -224,7 +231,8 @@ Deck::Deck(std::string name) :
     QJsonDocument doc(QJsonDocument::fromJson(deckData));
     auto masterObject = doc.object();
     //the master deck JSON data is stored as an object w/ two properties: "DeckName" : string, and "PhrasePairs" : array of objects
-    auto pairArray = masterObject["PairArray"].toArray();
+    auto pairArray = masterObject["PhrasePairs"].toArray();
+    printf("%d pairs found\n", pairArray.size());
     for(auto pair : pairArray)
     {
         auto pairObj = pair.toObject();
@@ -285,6 +293,8 @@ QJsonObject Deck::getDeckAsObject()
         {"DeckName", deckName.c_str()},
         {"PhrasePairs", getPairJsons()}
     };
+    auto numPairs = obj["PhrasePairs"].toArray().size();
+    printf("Deck has %d pairs\n", numPairs);
     return obj;
 }
 QJsonArray Deck::getPairJsons()
@@ -305,4 +315,11 @@ void Deck::addNewPairs(std::vector<PhrasePairCards>& newPairs)
         pair.addAllToVector(allCards);
     }
     printf("%d new pairs added to deck\n", (int)newPairs.size());
+}
+void Deck::pushBackDueDates(int numDays)
+{
+    for(auto& card : allCards)
+    {
+        card.setDueIn(numDays * -1);
+    }
 }

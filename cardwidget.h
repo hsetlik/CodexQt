@@ -75,7 +75,7 @@ class CardWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit CardWidget(Deck* deck,QWidget *parent = nullptr);
+    explicit CardWidget(Deck* deck, std::deque<Card*>& cards, QWidget *parent = nullptr);
     Deck* const linkedDeck;
     void nextCard();
     ~CardWidget();
@@ -88,10 +88,12 @@ private slots:
 
     void on_button4_clicked();
 
+    void on_nextButton_clicked();
+
 private:
     Ui::CardWidget *ui;
     std::unique_ptr<CardContent> currentContent;
-    std::deque<Card*> cardsDue;
+    std::deque<Card*>& cardsDue;
 };
 
 #endif // CARDWIDGET_H

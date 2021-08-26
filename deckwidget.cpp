@@ -27,10 +27,9 @@ void DeckWidget::updateLabels()
     ui->cardsDueValue->setText(sNumDue);
     ui->nameValue->setText(name);
 }
-
-
 void DeckWidget::on_studyButton_clicked()
 {
-
+    auto cardsDue = linkedDeck->dueToday();
+    emit studyScreenWith(cardsDue);
 }
 

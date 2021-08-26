@@ -136,6 +136,7 @@ public:
     void addNewPairs(std::vector<PhrasePairCards>& newPairs);
     void saveToFile();
     std::string getName() {return deckName; }
+    void pushBackDueDates(int numDays);
 private:
     std::string deckName;
     QJsonObject getDeckAsObject();

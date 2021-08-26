@@ -19,6 +19,7 @@ public:
     ~DeckWidget();
 signals:
     void goToInputScreen();
+    void studyScreenWith(std::deque<Card*>& cardPointers);
 
 
 private slots:
