@@ -54,6 +54,19 @@ private:
     QLineEdit* answerBox;
 };
 //==========================================================
+struct CardContentGenerator
+{
+    static CardContent* getContentFor(Card* card, QWidget* parent)
+    {
+        if(card->cardType == CardType::NTA)
+            return new NtaContent(dynamic_cast<NtaCard*>(card), parent);
+        else if(card->cardType == CardType::Cloze)
+            return new ClozeContent(dynamic_cast<ClozeCard*>(card), parent);
+        else
+            return new FullContent(dynamic_cast<FullCard*>(card), parent);
+    }
+};
+//==========================================================
 namespace Ui
 {
 class CardWidget;
@@ -64,11 +77,21 @@ class CardWidget : public QWidget
 public:
     explicit CardWidget(Deck* deck,QWidget *parent = nullptr);
     Deck* const linkedDeck;
-    void viewCard(Card* card);
+    void nextCard();
     ~CardWidget();
+private slots:
+    void on_button1_clicked();
+
+    void on_button2_clicked();
+
+    void on_button3_clicked();
+
+    void on_button4_clicked();
+
 private:
     Ui::CardWidget *ui;
-    std::deque<Card> cardsDue;
+    std::unique_ptr<CardContent> currentContent;
+    std::deque<Card*> cardsDue;
 };
 
 #endif // CARDWIDGET_H

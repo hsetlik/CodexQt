@@ -213,7 +213,6 @@ Deck::Deck(std::string name) :
     QString deckFileName = sDeckFile.c_str();
     //2. load file into ByteArray and by extension JSON
     QFile loadFile(deckFileName);
-
     if(!loadFile.open(QIODevice::ReadWrite))
         printf("File not loaded\n");
     if(loadFile.exists())
@@ -221,6 +220,7 @@ Deck::Deck(std::string name) :
         printf("File: %s exists\n", loadFile.fileName().toStdString().c_str());
     }
     QByteArray deckData = loadFile.readAll();
+    printf("File has size: %d bytes\n", deckData.size());
     QJsonDocument doc(QJsonDocument::fromJson(deckData));
     auto masterObject = doc.object();
     //the master deck JSON data is stored as an object w/ two properties: "DeckName" : string, and "PhrasePairs" : array of objects
@@ -267,14 +267,14 @@ void Deck::addPhrasePairFrom(QJsonObject &obj)
     phrasePairs.push_back(newPair);
     newPair.addAllToVector(allCards);
 }
-std::deque<Card> Deck::dueToday()
+std::deque<Card*> Deck::dueToday()
 {
-    std::deque<Card> due;
+    std::deque<Card*> due;
     auto date = QDateTime::currentDateTime();
     for(int i = 0; i < (int)allCards.size(); ++i)
     {
         if (allCards[i].isDue (date))
-            due.push_back (allCards[i]);
+            due.push_back (&allCards[i]);
     }
     return due;
 }

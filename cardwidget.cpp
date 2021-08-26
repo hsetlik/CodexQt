@@ -105,14 +105,40 @@ void FullContent::flip(std::string answer)
 CardWidget::CardWidget(Deck* deck, QWidget *parent) :
     QWidget(parent),
     linkedDeck(deck),
-    ui(new Ui::CardWidget)
+    ui(new Ui::CardWidget),
+    currentContent(nullptr)
 {
     ui->setupUi(this);
     cardsDue = linkedDeck->dueToday();
-
 }
 
+void CardWidget::nextCard()
+{
+    auto nextCard = cardsDue.front();
+    cardsDue.pop_front();
+    if(currentContent != nullptr)
+        currentContent->setVisible(false);
+    currentContent.reset(CardContentGenerator::getContentFor(nextCard, this));
+    currentContent->setVisible(true);
+}
 CardWidget::~CardWidget()
 {
     delete ui;
 }
+void CardWidget::on_button1_clicked()
+{
+
+}
+void CardWidget::on_button2_clicked()
+{
+
+}
+void CardWidget::on_button3_clicked()
+{
+
+}
+void CardWidget::on_button4_clicked()
+{
+
+}
+
