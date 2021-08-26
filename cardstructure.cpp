@@ -6,7 +6,6 @@ NtaCard::NtaCard(std::string native, std::string target, PhrasePair* parent) :
     targetWord(target)
 {
 }
-
 NtaCard::NtaCard(QJsonObject& obj) :
     Card(obj),
     nativeWord(""),
@@ -19,13 +18,13 @@ NtaCard::NtaCard(QJsonObject& obj) :
     auto qDateString = obj["DateNextDue"].toString();
     dateNextDue = QDateTime::fromString(qDateString);
 }
-
 ClozeCard::ClozeCard(std::string toRemove, PhrasePair* parent) :
     Card(parent, CardType::Cloze),
     clozeSentence(" "),
     answer(toRemove)
 {
-    clozeSentence = parent->targetPhrase.fullPhrase;
+    fullTarget = parent->targetPhrase.fullPhrase;
+    clozeSentence = fullTarget;
     auto clozeIdx = clozeSentence.find(answer);
     if(clozeIdx != std::string::npos)
     {
@@ -35,13 +34,14 @@ ClozeCard::ClozeCard(std::string toRemove, PhrasePair* parent) :
         }
     }
 }
-
 ClozeCard::ClozeCard(QJsonObject& obj) :
     Card(obj),
     clozeSentence(""),
     answer("")
 {
     auto qAnswer = obj["ClozeWord"].toString();
+    fullTarget = obj["FullTarget"].toString().toStdString();
+    clozeSentence = fullTarget;
     auto clozeIdx = clozeSentence.find(answer);
     if(clozeIdx != std::string::npos)
     {
@@ -59,7 +59,6 @@ FullCard::FullCard(PhrasePair* parent) :
     fullNative = parent->nativePhrase.fullPhrase;
     fullTarget = parent->targetPhrase.fullPhrase;
 }
-
 FullCard::FullCard(QJsonObject& obj) :
     Card(obj)
 {
@@ -68,7 +67,6 @@ FullCard::FullCard(QJsonObject& obj) :
     auto qDateString = obj["DateNextDue"].toString();
     dateNextDue = QDateTime::fromString(qDateString);
 }
-
 QJsonObject NtaCard::getJson()
 {
     QJsonObject obj
@@ -81,19 +79,18 @@ QJsonObject NtaCard::getJson()
     };
     return obj;
 }
-
 QJsonObject ClozeCard::getJson()
 {
     QJsonObject obj
     {
         {"CardType", "Cloze"},
         {"ParentPairId", parentPairId},
+        {"FullTarget", fullTarget.c_str()},
         {"ClozeWord", answer.c_str()},
         {"DateNextDue", dateNextDue.toString()}
     };
     return obj;
 }
-
 QJsonObject FullCard::getJson()
 {
     QJsonObject obj
@@ -106,6 +103,7 @@ QJsonObject FullCard::getJson()
     };
     return obj;
 }
+//===============================================================================
 PhrasePairCards::PhrasePairCards(PhrasePair* pair) :
     full(nullptr)
 {
@@ -123,7 +121,6 @@ PhrasePairCards::PhrasePairCards(PhrasePair* pair) :
     if(pair->includesFull())
         full = new FullCard(pair);
 }
-
 PhrasePairCards::PhrasePairCards(QJsonObject& obj) :
     full(nullptr)
 {
@@ -146,7 +143,6 @@ PhrasePairCards::PhrasePairCards(QJsonObject& obj) :
         full = new FullCard(fullCardObject);
     }
 }
-
 QJsonArray PhrasePairCards::getNtaJsons()
 {
     QJsonArray ntaArray;
@@ -157,7 +153,6 @@ QJsonArray PhrasePairCards::getNtaJsons()
     }
     return ntaArray;
 }
-
 QJsonArray PhrasePairCards::getClozeJsons()
 {
     QJsonArray clozeArray;
@@ -168,7 +163,6 @@ QJsonArray PhrasePairCards::getClozeJsons()
     }
     return clozeArray;
 }
-
 void PhrasePairCards::appendToDeckArray(QJsonArray &array)
 {
     auto ntas = getNtaJsons();
@@ -187,7 +181,6 @@ void PhrasePairCards::appendToDeckArray(QJsonArray &array)
         array.append(fullJson);
     }
 }
-
 void PhrasePairCards::addAllToVector(std::vector<Card>& allCards)
 {
     for(auto& card : ntaCards)
@@ -197,7 +190,6 @@ void PhrasePairCards::addAllToVector(std::vector<Card>& allCards)
     if(full != nullptr)
         allCards.push_back(*full);
 }
-
 QJsonObject PhrasePairCards::getPairJson()
 {
     QJsonObject obj
@@ -212,7 +204,7 @@ QJsonObject PhrasePairCards::getPairJson()
         obj["FullCard"] = full->getJson();
     return obj;
 }
-
+//===============================================================================
 Deck::Deck(std::string name) :
     deckName(name)
 {
@@ -305,7 +297,6 @@ QJsonArray Deck::getPairJsons()
     }
     return arr;
 }
-
 void Deck::addNewPairs(std::vector<PhrasePairCards>& newPairs)
 {
     for(auto& pair : newPairs)
@@ -315,4 +306,3 @@ void Deck::addNewPairs(std::vector<PhrasePairCards>& newPairs)
     }
     printf("%d new pairs added to deck\n", (int)newPairs.size());
 }
-

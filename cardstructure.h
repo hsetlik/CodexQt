@@ -3,7 +3,6 @@
 
 #include "datastructures.h"
 #include <QtWidgets>
-
 enum class CardType
 {
     NTA,
@@ -11,7 +10,6 @@ enum class CardType
     Audio,
     Full
 };
-
 struct Card
 {
     Card(PhrasePair* pair, CardType type) :
@@ -63,7 +61,7 @@ protected:
     QDateTime dateNextDue;
     QString parentPairId;
 };
-
+//=================================================================================
 struct NtaCard : public Card
 {
 public:
@@ -76,7 +74,7 @@ private:
     std::string nativeWord;
     std::string targetWord;
 };
-
+//=================================================================================
 struct ClozeCard : public Card
 {
 public:
@@ -85,11 +83,13 @@ public:
     std::string getFrontData() override {return clozeSentence; }
     std::string getBackData() override {return answer; }
     QJsonObject getJson() override;
+    std::string getFullTarget(){return fullTarget; }
 private:
     std::string clozeSentence;
     std::string answer;
+    std::string fullTarget;
 };
-
+//=================================================================================
 struct FullCard : public Card
 {
 public:
@@ -102,7 +102,7 @@ private:
     std::string fullNative;
     std::string fullTarget;
 };
-
+//=================================================================================
 struct PhrasePairCards
 {
     PhrasePairCards(PhrasePair* parent);
@@ -121,8 +121,7 @@ private:
     std::string fullNative;
     std::string fullTarget;
 };
-
-//==============================================================
+//================================================================================
 //Full deck data structure, includes functionality for storing as file JSON
 class Deck
 {
@@ -142,5 +141,4 @@ private:
     QJsonObject getDeckAsObject();
     QJsonArray getPairJsons();
 };
-
 #endif // CARDSTRUCTURE_H
