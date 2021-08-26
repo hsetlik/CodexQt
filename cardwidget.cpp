@@ -6,7 +6,6 @@ CardContent::CardContent(Card* c, QWidget* parent) :
     linkedCard(c)
 {
     printf("Creating card content\n");
-
 }
 //===========================================================================
 NtaContent::NtaContent(Card* card, QWidget* parent) :
@@ -162,10 +161,6 @@ void CardWidget::on_button4_clicked()
     currentContent->flip("3");
     ui->nextButton->setVisible(true);
 }
-void CardWidget::on_nextButton_clicked()
-{
-    nextCard();
-}
 void CardWidget::updateContent()
 {
     auto next = cardsDue[0];
@@ -183,4 +178,9 @@ void CardWidget::updateContent()
     else
         currentContent.reset(new FullContent(dynamic_cast<FullCard*>(next), this));
     cardsDue.erase(cardsDue.begin());
+}
+void CardWidget::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Enter)
+        ui->
 }

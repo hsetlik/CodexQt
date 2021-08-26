@@ -38,6 +38,7 @@ class ClozeContent : public CardContent
 public:
     explicit ClozeContent(Card* card, QWidget* parent=nullptr);
     void flip(std::string answer="null") override;
+
 private:
     std::vector<QLabel*> labels;
     QLineEdit* clozeBox;
@@ -81,6 +82,7 @@ public:
     explicit CardWidget(Deck* deck, std::vector<Card*> cards, QWidget *parent = nullptr);
     Deck* const linkedDeck;
     void nextCard();
+    void keyPressEvent(QKeyEvent* event) override;
     ~CardWidget();
 private slots:
     void on_button1_clicked();
@@ -90,9 +92,6 @@ private slots:
     void on_button3_clicked();
 
     void on_button4_clicked();
-
-    void on_nextButton_clicked();
-
 private:
     void updateContent();
     Ui::CardWidget *ui;
