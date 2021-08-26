@@ -7,8 +7,8 @@ NtaCard::NtaCard(std::string native, std::string target, PhrasePair* parent) :
 {
 }
 
-NtaCard::NtaCard(QJsonObject& obj, PhrasePair* parent) :
-    Card(parent, CardType::NTA),
+NtaCard::NtaCard(QJsonObject& obj) :
+    Card(obj),
     nativeWord(""),
     targetWord("")
 {
@@ -25,7 +25,7 @@ ClozeCard::ClozeCard(std::string toRemove, PhrasePair* parent) :
     clozeSentence(" "),
     answer(toRemove)
 {
-    clozeSentence = parentPair->targetPhrase.fullPhrase;
+    clozeSentence = parent->targetPhrase.fullPhrase;
     auto clozeIdx = clozeSentence.find(answer);
     if(clozeIdx != std::string::npos)
     {
@@ -36,14 +36,12 @@ ClozeCard::ClozeCard(std::string toRemove, PhrasePair* parent) :
     }
 }
 
-ClozeCard::ClozeCard(QJsonObject& obj, PhrasePair* parent) :
-    Card(parent, CardType::Cloze),
+ClozeCard::ClozeCard(QJsonObject& obj) :
+    Card(obj),
     clozeSentence(""),
     answer("")
 {
     auto qAnswer = obj["ClozeWord"].toString();
-    answer = qAnswer.toStdString();
-    clozeSentence = parentPair->targetPhrase.fullPhrase;
     auto clozeIdx = clozeSentence.find(answer);
     if(clozeIdx != std::string::npos)
     {
@@ -58,15 +56,15 @@ ClozeCard::ClozeCard(QJsonObject& obj, PhrasePair* parent) :
 FullCard::FullCard(PhrasePair* parent) :
     Card(parent, CardType::Full)
 {
-    question = parent->nativePhrase.fullPhrase;
-    answer = parent->targetPhrase.fullPhrase;
+    fullNative = parent->nativePhrase.fullPhrase;
+    fullTarget = parent->targetPhrase.fullPhrase;
 }
 
-FullCard::FullCard(QJsonObject& obj, PhrasePair* parent) :
-    Card(parent, CardType::Full)
+FullCard::FullCard(QJsonObject& obj) :
+    Card(obj)
 {
-    question = obj["NativePhrase"].toString().toStdString();
-    answer = obj["TargetPhrase"].toString().toStdString();
+    fullNative = obj["NativePhrase"].toString().toStdString();
+    fullTarget = obj["TargetPhrase"].toString().toStdString();
     auto qDateString = obj["DateNextDue"].toString();
     dateNextDue = QDateTime::fromString(qDateString);
 }
@@ -76,7 +74,7 @@ QJsonObject NtaCard::getJson()
     QJsonObject obj
     {
         {"CardType", "NTA"},
-        {"ParentPairId", parentPair->getJsonIdString().c_str()},
+        {"ParentPairId", parentPairId},
         {"NativeWord", nativeWord.c_str()},
         {"TargetWord", targetWord.c_str()},
         {"DateNextDue", dateNextDue.toString()}
@@ -89,7 +87,7 @@ QJsonObject ClozeCard::getJson()
     QJsonObject obj
     {
         {"CardType", "Cloze"},
-        {"ParentPairId", parentPair->getJsonIdString().c_str()},
+        {"ParentPairId", parentPairId},
         {"ClozeWord", answer.c_str()},
         {"DateNextDue", dateNextDue.toString()}
     };
@@ -101,28 +99,52 @@ QJsonObject FullCard::getJson()
     QJsonObject obj
     {
         {"CardType", "Full"},
-        {"ParentPairId", parentPair->getJsonIdString().c_str()},
-        {"NativePhrase", parentPair->nativePhrase.fullPhrase.c_str()},
-        {"TargetPhrase", parentPair->targetPhrase.fullPhrase.c_str()},
+        {"ParentPairId", parentPairId},
+        {"NativePhrase", fullNative.c_str()},
+        {"TargetPhrase", fullTarget.c_str()},
         {"DateNextDue", dateNextDue.toString()}
     };
     return obj;
 }
 PhrasePairCards::PhrasePairCards(PhrasePair* pair) :
-    linkedPair(pair),
     full(nullptr)
 {
-    for(auto& nta : linkedPair->ntaPairs)
+    pairId = pair->getJsonIdString();
+    fullNative = pair->nativePhrase.fullPhrase;
+    fullTarget = pair->targetPhrase.fullPhrase;
+    for(auto& nta : pair->ntaPairs)
     {
-        ntaCards.push_back(NtaCard(nta.first, nta.second, linkedPair));
+        ntaCards.push_back(NtaCard(nta.first, nta.second, pair));
     }
-    for(auto & cloze : linkedPair->clozeWords)
+    for(auto & cloze : pair->clozeWords)
     {
-        clozeCards.push_back(ClozeCard(cloze, linkedPair));
+        clozeCards.push_back(ClozeCard(cloze, pair));
     }
-    if(linkedPair->includesFull())
-        full = new FullCard(linkedPair);
+    if(pair->includesFull())
+        full = new FullCard(pair);
+}
 
+PhrasePairCards::PhrasePairCards(QJsonObject& obj) :
+    full(nullptr)
+{
+    pairId = obj["PhrasePairId"].toString().toStdString();
+    fullNative = obj["NativePhrase"].toString().toStdString();
+    fullTarget = obj["TargetPhrase"].toString().toStdString();
+    for(auto nta : obj["NtaCards"].toObject())
+    {
+        auto ntaObject = nta.toObject();
+        ntaCards.push_back(NtaCard(ntaObject));
+    }
+    for(auto cloze : obj["ClozeCards"].toObject())
+    {
+        auto clozeObject = cloze.toObject();
+        clozeCards.push_back(ClozeCard(clozeObject));
+    }
+    if(obj.contains("FullCard"))
+    {
+        auto fullCardObject = obj["FullCard"].toObject();
+        full = new FullCard(fullCardObject);
+    }
 }
 
 QJsonArray PhrasePairCards::getNtaJsons()
@@ -166,20 +188,131 @@ void PhrasePairCards::appendToDeckArray(QJsonArray &array)
     }
 }
 
+void PhrasePairCards::addAllToVector(std::vector<Card>& allCards)
+{
+    for(auto& card : ntaCards)
+        allCards.push_back(card);
+    for(auto& card : clozeCards)
+        allCards.push_back(card);
+    if(full != nullptr)
+        allCards.push_back(*full);
+}
+
+QJsonObject PhrasePairCards::getPairJson()
+{
+    QJsonObject obj
+    {
+        {"PhrasePairId", pairId.c_str()},
+        {"NativePhrase", fullNative.c_str()},
+        {"TargetPhrase", fullTarget.c_str()},
+        {"NtaCards", getNtaJsons()},
+        {"ClozeCards", getClozeJsons()}
+    };
+    if(full != nullptr)
+        obj["FullCard"] = full->getJson();
+    return obj;
+}
+
 Deck::Deck(std::string name) :
     deckName(name)
 {
+    //1. determine the deck file name
+    auto sDeckFile = deckName + ".json";
+    QString deckFileName = sDeckFile.c_str();
+    //2. load file into ByteArray and by extension JSON
+    QFile loadFile(deckFileName);
 
+    if(!loadFile.open(QIODevice::ReadWrite))
+        printf("File not loaded\n");
+    if(loadFile.exists())
+    {
+        printf("File: %s exists\n", loadFile.fileName().toStdString().c_str());
+    }
+    QByteArray deckData = loadFile.readAll();
+    QJsonDocument doc(QJsonDocument::fromJson(deckData));
+    auto masterObject = doc.object();
+    //the master deck JSON data is stored as an object w/ two properties: "DeckName" : string, and "PhrasePairs" : array of objects
+    auto pairArray = masterObject["PairArray"].toArray();
+    for(auto pair : pairArray)
+    {
+        auto pairObj = pair.toObject();
+        addPhrasePairFrom(pairObj);
+    }
+    loadFile.close();
 }
-
-std::vector<Card> Deck::dueToday()
+Deck::~Deck()
 {
-    std::vector<Card> due;
+    saveToFile();
+}
+void Deck::saveToFile()
+{
+    //1. determine the deck file name
+    auto sDeckFile = deckName + ".json";
+    QString deckFileName = sDeckFile.c_str();
+    //2. load file into ByteArray and by extension JSON
+    QFile loadFile(deckFileName);
+    if(!loadFile.open(QIODevice::ReadWrite | QIODevice::Truncate))
+        printf("File not loaded\n");
+    auto deckJsonDoc = QJsonDocument(getDeckAsObject());
+    auto bytesWritten = loadFile.write(deckJsonDoc.toJson());
+    printf("%lld bytes written to file\n", bytesWritten);
+    loadFile.close();
+}
+int Deck::numDueToday()
+{
+     int numDue = 0;
+     auto date = QDateTime::currentDateTime();
+     for(int i = 0; i < (int)allCards.size(); ++i)
+     {
+         if (allCards[i].isDue (date))
+             ++numDue;
+     }
+     return numDue;
+}
+void Deck::addPhrasePairFrom(QJsonObject &obj)
+{
+    auto newPair = PhrasePairCards(obj);
+    phrasePairs.push_back(newPair);
+    newPair.addAllToVector(allCards);
+}
+std::deque<Card> Deck::dueToday()
+{
+    std::deque<Card> due;
     auto date = QDateTime::currentDateTime();
     for(int i = 0; i < (int)allCards.size(); ++i)
     {
-        if(allCards[i].isDue(date))
-            due.push_back(allCards[i]);
+        if (allCards[i].isDue (date))
+            due.push_back (allCards[i]);
     }
     return due;
 }
+QJsonObject Deck::getDeckAsObject()
+{
+    QJsonObject obj
+    {
+        {"DeckName", deckName.c_str()},
+        {"PhrasePairs", getPairJsons()}
+    };
+    return obj;
+}
+QJsonArray Deck::getPairJsons()
+{
+    QJsonArray arr;
+    for(auto& pair : phrasePairs)
+    {
+        auto pairObj = pair.getPairJson();
+        arr.append(pairObj);
+    }
+    return arr;
+}
+
+void Deck::addNewPairs(std::vector<PhrasePairCards>& newPairs)
+{
+    for(auto& pair : newPairs)
+    {
+        phrasePairs.push_back(pair);
+        pair.addAllToVector(allCards);
+    }
+    printf("%d new pairs added to deck\n", (int)newPairs.size());
+}
+

@@ -99,22 +99,18 @@ class InputWidget : public QWidget
 public:
     explicit InputWidget(QWidget *parent = nullptr);
     void advancePhrasePair();
+
 public slots:
     void prepareEditorsFor(std::vector<PhrasePair>& pairs);
-
 
 signals:
     void returnNewPairCards(std::vector<PhrasePairCards>& cards);
 
 private slots:
     void on_prevButton_clicked();
-
     void on_nextButton_clicked();
-
     void on_fullBox_stateChanged(int arg1);
-
     void on_finishButton_clicked();
-
 private:
     std::vector<PhrasePair> allPairs;
     std::unique_ptr<PhrasePairWidget> currentPhrasePair;

@@ -2,6 +2,7 @@
 #define DECKWIDGET_H
 
 #include <QWidget>
+#include "cardstructure.h"
 
 namespace Ui {
 class DeckWidget;
@@ -12,7 +13,9 @@ class DeckWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit DeckWidget(QWidget *parent = nullptr);
+    explicit DeckWidget(Deck* deck, QWidget *parent = nullptr);
+    Deck* const linkedDeck;
+    void updateLabels();
     ~DeckWidget();
 signals:
     void goToInputScreen();

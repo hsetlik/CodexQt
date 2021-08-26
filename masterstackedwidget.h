@@ -22,6 +22,8 @@ private slots:
     void switchToPhraseInput();
 public slots:
     void finishAddingCards(std::vector<PhrasePairCards>& newPairs);
+private:
+    std::unique_ptr<Deck> currentDeck;
 
 
 signals:

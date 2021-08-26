@@ -14,6 +14,26 @@ PhrasePair::PhrasePair(const PhrasePair& other) :
 {
 }
 
+PhrasePair::PhrasePair(QJsonObject& obj) :
+    nativePhrase(obj["NativePhrase"].toString().toStdString(), this),
+    targetPhrase(obj["TargetPhrase"].toString().toStdString(), this)
+{
+    auto ntaArray = obj["NtaCards"].toArray();
+    for(auto card : ntaArray)
+    {
+        auto cardObject = card.toObject();
+        auto sNative = cardObject["NativeWord"].toString().toStdString();
+        auto sTarget = cardObject["TargetWord"].toString().toStdString();
+        addNtaPair(sNative, sTarget);
+    }
+    auto clozeArray = obj["ClozeCards"].toArray();
+    for(auto card : clozeArray)
+    {
+        auto cardObject = card.toObject();
+        auto sCloze = cardObject["ClozeWord"].toString().toStdString();
+        addCloze(sCloze);
+    }
+}
 void PhrasePair::addNtaPair(std::string nativeString, std::string targetString)
 {
     printf("Adding pair: %s, %s\n", nativeString.c_str(), targetString.c_str());

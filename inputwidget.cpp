@@ -291,6 +291,11 @@ InputWidget::InputWidget(QWidget *parent) :
 
 void InputWidget::advancePhrasePair()
 {
+    if(currentPhrasePair != nullptr)
+    {
+        auto newPairCards = PhrasePairCards(currentPhrasePair->linkedPair);
+        createdCardSets.push_back(newPairCards);
+    }
      ++pairIndex;
     if(pairIndex >= (int)allPairs.size())
         return;
@@ -321,7 +326,8 @@ void InputWidget::on_prevButton_clicked()
         return;
     --pairIndex;
     totalCardsAdded -= currentPhrasePair->linkedPair->getNumCards();
-    createdCardSets.pop_back();
+    if(createdCardSets.size() >= 1)
+        createdCardSets.pop_back();
     ui->verticalLayout->removeWidget(&*currentPhrasePair);
     printf("Displaying Pair Number %d\n", pairIndex);
     auto& pairToAdd = allPairs[pairIndex];
@@ -340,9 +346,8 @@ void InputWidget::on_fullBox_stateChanged(int)
 {
     allPairs[pairIndex].toggleIncludeFull();
 }
-
-
 void InputWidget::on_finishButton_clicked()
 {
+    printf("Sending %d new pairs\n", (int)createdCardSets.size());
     emit returnNewPairCards(createdCardSets);
 }

@@ -2,7 +2,8 @@
 #define DATASTRUCTURES_H
 #include "stlutility.h"
 #include <QString>
-
+#include <QJsonObject>
+#include <QJsonArray>
 class PhrasePair;
 
 
@@ -66,6 +67,7 @@ class PhrasePair
 public:
     PhrasePair(std::string nativeFull, std::string targetFull);
     PhrasePair(const PhrasePair& other);
+    PhrasePair(QJsonObject& obj);
     Phrase nativePhrase;
     Phrase targetPhrase;
     void addListener(PhrasePairListener* list) {listeners.push_back(list); }
