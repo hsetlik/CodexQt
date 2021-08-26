@@ -43,7 +43,7 @@ ClozeContent::ClozeContent(Card* _card, QWidget* parent) :
     auto clozeWord = card->getBackData();
     int x= 5;
     int y = 5;
-    for(auto word : allWords)
+    for(auto& word : allWords)
     {
         auto label = new QLabel(word.c_str());
         label->move(x, y);
