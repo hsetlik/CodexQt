@@ -20,6 +20,11 @@ struct Card
     }
     Card(QJsonObject& obj) : cardType(getCardType(obj))
     {
+        auto keys = obj.keys();
+        for(auto key : keys)
+        {
+            printf("%s: %s\n", key.toStdString().c_str(), obj[key].toString().toStdString().c_str());
+        }
         auto dateString = obj["DateNextDue"].toString();
         dateNextDue = QDateTime::fromString(dateString);
         parentPairId = obj["ParentPairId"].toString();
@@ -111,7 +116,8 @@ struct PhrasePairCards
     std::vector<ClozeCard> clozeCards;
     FullCard* full;
     QJsonObject getPairJson();
-    void addAllToVector(std::vector<Card>& allCards);
+    void addAllToVector(std::vector<Card*>& allCards);
+    static void pushWithCast(Card* card, std::vector<Card*>& array);
 private:
     //adds all the cards to an external array for storing a deck of multiple phrase pairs
     void appendToDeckArray(QJsonArray& array);
@@ -130,7 +136,7 @@ public:
     ~Deck();
     void addPhrasePairFrom(QJsonObject& obj);
     std::vector<PhrasePairCards> phrasePairs;
-    std::vector<Card> allCards;
+    std::vector<Card*> allCards;
     std::vector<Card*> dueToday();
     int numDueToday();
     void addNewPairs(std::vector<PhrasePairCards>& newPairs);
@@ -141,5 +147,6 @@ private:
     std::string deckName;
     QJsonObject getDeckAsObject();
     QJsonArray getPairJsons();
+
 };
 #endif // CARDSTRUCTURE_H

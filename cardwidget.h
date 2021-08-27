@@ -47,7 +47,7 @@ private:
 class FullContent : public CardContent
 {
 public:
-    explicit FullContent(FullCard* card, QWidget* parent=nullptr);
+    explicit FullContent(Card* card, QWidget* parent=nullptr);
     void flip() override;
 private:
     QLabel* fullTarget;
@@ -60,16 +60,33 @@ struct CardContentGenerator
     static CardContent* getContentFor(Card* card, QWidget* parent)
     {
         if(card->cardType == CardType::NTA)
-            return new NtaContent(dynamic_cast<NtaCard*>(card), parent);
+            return new NtaContent(card, parent);
         else if(card->cardType == CardType::Cloze)
         {
-            auto pCloze = dynamic_cast<ClozeCard*>(card);
-            return new ClozeContent(pCloze, parent);
+            return new ClozeContent(card, parent);
         }
-        else
+        else if(card->cardType == CardType::Full)
             return new FullContent(dynamic_cast<FullCard*>(card), parent);
+        else
+            return nullptr;
     }
 };
+//==========================================================
+class CardViewer : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit CardViewer(std::vector<Card*>& cards, QWidget *parent = nullptr);
+public slots:
+    void nextCard();
+private:
+    std::vector<Card*> allCards;
+    QVBoxLayout* layout;
+    int cardIdx;
+    QWidget* currentWidget;
+    QWidget* newWidget;
+};
+
 //==========================================================
 namespace Ui
 {
@@ -96,7 +113,7 @@ private:
     void updateContent();
     void setButtonsVisible(bool shouldBeVisible);
     Ui::CardWidget *ui;
-    std::unique_ptr<CardContent> currentContent;
+    CardViewer* viewer;
     std::vector<Card*> cardsDue;
 };
 

@@ -1,5 +1,4 @@
 #include "cardstructure.h"
-
 NtaCard::NtaCard(std::string native, std::string target, PhrasePair* parent) :
     Card(parent, CardType::NTA),
     nativeWord(native),
@@ -11,12 +10,12 @@ NtaCard::NtaCard(QJsonObject& obj) :
     nativeWord(""),
     targetWord("")
 {
+    printf("Creating NTA from JSON\n");
     auto qNative = obj["NativeWord"].toString();
     nativeWord = qNative.toStdString();
     auto qTarget = obj["TargetWord"].toString();
     targetWord = qTarget.toStdString();
     auto qDateString = obj["DateNextDue"].toString();
-    printf("Date next due: %s\n", qDateString.toStdString().c_str());
     dateNextDue = QDateTime::fromString(qDateString);
 }
 ClozeCard::ClozeCard(std::string toRemove, PhrasePair* parent) :
@@ -40,6 +39,7 @@ ClozeCard::ClozeCard(QJsonObject& obj) :
     clozeSentence(""),
     answer("")
 {
+    printf("Creating Cloze from JSON\n");
     auto qAnswer = obj["ClozeWord"].toString();
     fullTarget = obj["FullTarget"].toString().toStdString();
     clozeSentence = fullTarget;
@@ -125,7 +125,6 @@ PhrasePairCards::PhrasePairCards(PhrasePair* pair) :
 PhrasePairCards::PhrasePairCards(QJsonObject& obj) :
     full(nullptr)
 {
-    printf("Creating pair with JSON\n");
     pairId = obj["PhrasePairId"].toString().toStdString();
     fullNative = obj["NativePhrase"].toString().toStdString();
     fullTarget = obj["TargetPhrase"].toString().toStdString();
@@ -133,7 +132,7 @@ PhrasePairCards::PhrasePairCards(QJsonObject& obj) :
     for(int i = 0; i < ntaArray.size(); ++i)
     {
         printf("Adding Nta Card\n");
-        auto ntaObject = ntaArray.at(i).toObject();
+        auto ntaObject = ntaArray[i].toObject();
         ntaCards.push_back(NtaCard(ntaObject));
     }
     auto clozeArray = obj["ClozeCards"].toArray();
@@ -188,14 +187,14 @@ void PhrasePairCards::appendToDeckArray(QJsonArray &array)
         array.append(fullJson);
     }
 }
-void PhrasePairCards::addAllToVector(std::vector<Card>& allCards)
+void PhrasePairCards::addAllToVector(std::vector<Card*>& allCards)
 {
     for(auto& card : ntaCards)
-        allCards.push_back(card);
+        pushWithCast(&card, allCards);
     for(auto& card : clozeCards)
-        allCards.push_back(card);
+        pushWithCast(&card, allCards);
     if(full != nullptr)
-        allCards.push_back(*full);
+        pushWithCast(full, allCards);
 }
 QJsonObject PhrasePairCards::getPairJson()
 {
@@ -211,6 +210,25 @@ QJsonObject PhrasePairCards::getPairJson()
         obj["FullCard"] = full->getJson();
     return obj;
 }
+void PhrasePairCards::pushWithCast(Card* card, std::vector<Card*>& array)
+{
+    if(card->cardType == CardType::NTA)
+    {
+        auto pNta = dynamic_cast<NtaCard*>(card);
+        array.push_back(pNta);
+    }
+    else if(card->cardType == CardType::Cloze)
+    {
+        auto pCLoze = dynamic_cast<ClozeCard*>(card);
+        array.push_back(pCLoze);
+    }
+    else if(card->cardType == CardType::Full)
+    {
+        auto pFull = dynamic_cast<FullCard*>(card);
+        array.push_back(pFull);
+    }
+}
+
 //===============================================================================
 Deck::Deck(std::string name) :
     deckName(name)
@@ -236,9 +254,9 @@ Deck::Deck(std::string name) :
     //the master deck JSON data is stored as an object w/ two properties: "DeckName" : string, and "PhrasePairs" : array of objects
     auto pairArray = masterObject["PhrasePairs"].toArray();
     printf("%d pairs found\n", pairArray.size());
-    for(auto pair : pairArray)
+    for(int i = 0; i < pairArray.size(); ++i)
     {
-        auto pairObj = pair.toObject();
+        auto pairObj = pairArray[i].toObject();
         addPhrasePairFrom(pairObj);
     }
     loadFile.close();
@@ -267,7 +285,7 @@ int Deck::numDueToday()
      auto date = QDateTime::currentDateTime();
      for(int i = 0; i < (int)allCards.size(); ++i)
      {
-         if (allCards[i].isDue (date))
+         if (allCards[i]->isDue (date))
              ++numDue;
      }
      return numDue;
@@ -284,8 +302,8 @@ std::vector<Card*> Deck::dueToday()
     auto date = QDateTime::currentDateTime();
     for(int i = 0; i < (int)allCards.size(); ++i)
     {
-        if (allCards[i].isDue (date))
-            due.push_back (&allCards[i]);
+        if (allCards[i]->isDue (date))
+            due.push_back (allCards[i]);
     }
     return due;
 }
@@ -323,6 +341,6 @@ void Deck::pushBackDueDates(int numDays)
 {
     for(auto& card : allCards)
     {
-        card.setDueIn(numDays * -1);
+        card->setDueIn(numDays * -1);
     }
 }

@@ -63,14 +63,13 @@ ClozeContent::ClozeContent(Card* _card, QWidget* parent) :
 void ClozeContent::flip()
 {
     clozeBox->setVisible(false);
-    auto card = dynamic_cast<ClozeCard*>(linkedCard);
     for(auto l : labels)
     {
         l->setVisible(true);
     }
 }
 //===========================================================================
-FullContent::FullContent(FullCard* card, QWidget* parent) :
+FullContent::FullContent(Card* card, QWidget* parent) :
     CardContent(card, parent),
     fullTarget(nullptr),
     fullNative(nullptr),
@@ -90,7 +89,6 @@ FullContent::FullContent(FullCard* card, QWidget* parent) :
     answerBox->move(x, y);
     answerBox->setMaximumWidth(fullNative->width());
     answerBox->show();
-
 }
 void FullContent::flip()
 {
@@ -98,23 +96,47 @@ void FullContent::flip()
     fullNative->setVisible(true);
 }
 //===========================================================================
+CardViewer::CardViewer(std::vector<Card*>& cards, QWidget *parent) :
+    QWidget(parent),
+    allCards(cards),
+    cardIdx(0),
+    currentWidget(nullptr),
+    newWidget(nullptr)
+{
+    layout = new QVBoxLayout;
+    newWidget = CardContentGenerator::getContentFor(allCards[cardIdx], this);
+    layout->addWidget(newWidget);
+    currentWidget = newWidget;
+    setLayout(layout);
+}
+
+void CardViewer::nextCard()
+{
+    ++cardIdx;
+    if(cardIdx >= (int)allCards.size())
+        return; //TODO: emit a signal here to finish study mode
+    newWidget = CardContentGenerator::getContentFor(allCards[cardIdx], this);
+    layout->replaceWidget(currentWidget, newWidget);
+    delete currentWidget;
+    currentWidget = newWidget;
+}
+//===========================================================================
 CardWidget::CardWidget(Deck* deck, std::vector<Card*> cards, QWidget *parent) :
     QWidget(parent),
     linkedDeck(deck),
     ui(new Ui::CardWidget),
-    currentContent(nullptr),
+   viewer(nullptr),
     cardsDue(cards)
 {
+    viewer = new CardViewer(cards, this);
     ui->setupUi(this);
-    nextCard();
+    ui->contentVBox->addWidget(viewer);
     grabKeyboard();
 }
 
 void CardWidget::nextCard()
 {
-    updateContent();
-    ui->contentVBox->addWidget(&*currentContent);
-    currentContent->setVisible(true);
+    viewer->nextCard();
     setButtonsVisible(false);
 }
 CardWidget::~CardWidget()
@@ -123,56 +145,26 @@ CardWidget::~CardWidget()
 }
 void CardWidget::on_button1_clicked()
 {
-    if(currentContent !=nullptr)
-    {
-        auto toRepeat = currentContent->linkedCard;
-        cardsDue.push_back(toRepeat);
-    }
     nextCard();
 }
 void CardWidget::on_button2_clicked()
 {
-    currentContent->setDueDate(3);
     nextCard();
 }
 void CardWidget::on_button3_clicked()
 {
-    currentContent->setDueDate(7);
     nextCard();
 }
 void CardWidget::on_button4_clicked()
 {
-    currentContent->setDueDate(12);
     nextCard();
 }
-void CardWidget::updateContent()
-{
-    if(currentContent)
-    {
-        ui->contentVBox->removeWidget(&*currentContent);
-    }
-    auto next = cardsDue[0];
-    if(!next)
-    {
-        printf("Card not valid\n");
-        return;
-    }
-    if(next->cardType == CardType::NTA)
-        currentContent.reset(new NtaContent(next, this));
-    else if(next->cardType == CardType::Cloze)
-    {
-        currentContent.reset(new ClozeContent(next, this));
-    }
-    else
-        currentContent.reset(new FullContent(dynamic_cast<FullCard*>(next), this));
-    cardsDue.erase(cardsDue.begin());
-}
+
 void CardWidget::keyPressEvent(QKeyEvent *event)
 {
     if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
     {
         printf("Enter pressed\n");
-        currentContent->flip();
         setButtonsVisible(true);
     }
     else
