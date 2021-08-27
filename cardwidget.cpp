@@ -25,10 +25,8 @@ NtaContent::NtaContent(Card* card, QWidget* parent) :
     nativeLabel->setVisible(false);
     setLayout(&layout);
 }
-void NtaContent::flip(std::string answer)
+void NtaContent::flip()
 {
-    auto buttonChoice = std::stoi(answer);
-    setDueDate(buttonChoice);
     nativeLabel->setVisible(true);
 }
 //===========================================================================
@@ -62,7 +60,7 @@ ClozeContent::ClozeContent(Card* _card, QWidget* parent) :
         labels.push_back(label);
     }
 }
-void ClozeContent::flip(std::string answer)
+void ClozeContent::flip()
 {
     clozeBox->setVisible(false);
     auto card = dynamic_cast<ClozeCard*>(linkedCard);
@@ -71,8 +69,6 @@ void ClozeContent::flip(std::string answer)
     {
         l->setVisible(true);
     }
-    auto buttonChoice = std::stoi(answer);
-    setDueDate(buttonChoice);
 }
 //===========================================================================
 FullContent::FullContent(FullCard* card, QWidget* parent) :
@@ -97,10 +93,8 @@ FullContent::FullContent(FullCard* card, QWidget* parent) :
     answerBox->show();
 
 }
-void FullContent::flip(std::string answer)
+void FullContent::flip()
 {
-    auto buttonChoice = std::stoi(answer);
-    setDueDate(buttonChoice);
     answerBox->setVisible(false);
     fullNative->setVisible(true);
 }
@@ -114,6 +108,7 @@ CardWidget::CardWidget(Deck* deck, std::vector<Card*> cards, QWidget *parent) :
 {
     ui->setupUi(this);
     nextCard();
+    grabKeyboard();
 }
 
 void CardWidget::nextCard()
@@ -130,7 +125,7 @@ void CardWidget::nextCard()
         ui->contentVBox->addWidget(&*currentContent);
     }
     currentContent->setVisible(true);
-    ui->nextButton->setVisible(false);
+    setButtonsVisible(false);
 }
 CardWidget::~CardWidget()
 {
@@ -142,24 +137,23 @@ void CardWidget::on_button1_clicked()
     {
         auto toRepeat = currentContent->linkedCard;
         cardsDue.push_back(toRepeat);
-        currentContent->flip("0");
-        ui->nextButton->setVisible(true);
     }
+    nextCard();
 }
 void CardWidget::on_button2_clicked()
 {
-    currentContent->flip("1");
-    ui->nextButton->setVisible(true);
+    currentContent->setDueDate(3);
+    nextCard();
 }
 void CardWidget::on_button3_clicked()
 {
-    currentContent->flip("2");
-    ui->nextButton->setVisible(true);
+    currentContent->setDueDate(7);
+    nextCard();
 }
 void CardWidget::on_button4_clicked()
 {
-    currentContent->flip("3");
-    ui->nextButton->setVisible(true);
+    currentContent->setDueDate(12);
+    nextCard();
 }
 void CardWidget::updateContent()
 {
@@ -181,6 +175,19 @@ void CardWidget::updateContent()
 }
 void CardWidget::keyPressEvent(QKeyEvent *event)
 {
-    if(event->key() == Qt::Key_Enter)
-        ui->
+    if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
+    {
+        printf("Enter pressed\n");
+        currentContent->flip();
+        setButtonsVisible(true);
+    }
+    else
+        printf("Other key pressed\n");
+}
+void CardWidget::setButtonsVisible(bool shouldBeVisible)
+{
+    ui->button1->setVisible(shouldBeVisible);
+    ui->button2->setVisible(shouldBeVisible);
+    ui->button3->setVisible(shouldBeVisible);
+    ui->button4->setVisible(shouldBeVisible);
 }

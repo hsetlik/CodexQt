@@ -11,7 +11,7 @@ public:
     explicit CardContent(Card* c, QWidget* parent = nullptr);
     virtual ~CardContent() {}
     Card* const linkedCard;
-    virtual void flip(std::string answer="null")=0;
+    virtual void flip()=0;
     virtual void setDueDate(int answerButton)
     {
         const int daysPerButton[] = {1, 3, 5, 10};
@@ -24,7 +24,7 @@ class NtaContent : public CardContent
     Q_OBJECT
 public:
     explicit NtaContent(Card* card, QWidget* parent = nullptr);
-    void flip(std::string answer="null") override;
+    void flip() override;
 private:
     QString targetStr;
     QString nativeStr;
@@ -37,7 +37,7 @@ class ClozeContent : public CardContent
     Q_OBJECT
 public:
     explicit ClozeContent(Card* card, QWidget* parent=nullptr);
-    void flip(std::string answer="null") override;
+    void flip() override;
 
 private:
     std::vector<QLabel*> labels;
@@ -48,7 +48,7 @@ class FullContent : public CardContent
 {
 public:
     explicit FullContent(FullCard* card, QWidget* parent=nullptr);
-    void flip(std::string answer="null") override;
+    void flip() override;
 private:
     QLabel* fullTarget;
     QLabel* fullNative;
@@ -94,6 +94,7 @@ private slots:
     void on_button4_clicked();
 private:
     void updateContent();
+    void setButtonsVisible(bool shouldBeVisible);
     Ui::CardWidget *ui;
     std::unique_ptr<CardContent> currentContent;
     std::vector<Card*> cardsDue;
