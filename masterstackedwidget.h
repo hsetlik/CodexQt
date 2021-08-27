@@ -30,9 +30,9 @@ public:
 private slots:
     void switchToCardEditors();
     void switchToPhraseInput();
-    void switchToStudyView(std::vector<Card*> cards);
+    void switchToStudyView();
 public slots:
-    void finishAddingCards(std::vector<PhrasePairCards> newPairs);
+    void finishAddingCards(QJsonArray pairs);
 private:
     std::unique_ptr<Deck> currentDeck;
     std::unique_ptr<CardWidget> studyView;

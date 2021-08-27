@@ -293,8 +293,7 @@ void InputWidget::advancePhrasePair()
 {
     if(currentPhrasePair != nullptr)
     {
-        auto newPairCards = PhrasePairCards(currentPhrasePair->linkedPair);
-        createdCardSets.push_back(newPairCards);
+        createdCardSets.push_back(PhrasePairCards(currentPhrasePair->linkedPair));
     }
      ++pairIndex;
     if(pairIndex >= (int)allPairs.size())
@@ -349,5 +348,5 @@ void InputWidget::on_fullBox_stateChanged(int)
 void InputWidget::on_finishButton_clicked()
 {
     printf("Sending %d new pairs\n", (int)createdCardSets.size());
-    emit returnNewPairCards(createdCardSets);
+    emit returnNewPairCards(getPairCardsAsArray());
 }

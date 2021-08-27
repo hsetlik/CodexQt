@@ -99,12 +99,22 @@ class InputWidget : public QWidget
 public:
     explicit InputWidget(QWidget *parent = nullptr);
     void advancePhrasePair();
+    QJsonArray getPairCardsAsArray()
+    {
+        QJsonArray arr;
+        for(auto& set : createdCardSets)
+        {
+            auto sObj = set.getPairJson();
+            arr.append(sObj);
+        }
+        return arr;
+    }
 
 public slots:
     void prepareEditorsFor(std::vector<PhrasePair>& pairs);
 
 signals:
-    void returnNewPairCards(std::vector<PhrasePairCards> cards);
+    void returnNewPairCards(QJsonArray cards);
 
 private slots:
     void on_prevButton_clicked();

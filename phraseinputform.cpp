@@ -57,7 +57,7 @@ void PhraseInputForm::addDummyPairs(int pairsToAdd)
 
 void PhraseInputForm::on_createSetupButton_clicked()
 {
-    addDummyPairs();
+    //addDummyPairs();
     emit getPairList(addedPairs);
 }
 

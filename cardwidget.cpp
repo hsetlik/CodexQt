@@ -121,14 +121,14 @@ void CardViewer::nextCard()
     currentWidget = newWidget;
 }
 //===========================================================================
-CardWidget::CardWidget(Deck* deck, std::vector<Card*> cards, QWidget *parent) :
+CardWidget::CardWidget(Deck* deck, QWidget *parent) :
     QWidget(parent),
     linkedDeck(deck),
     ui(new Ui::CardWidget),
-   viewer(nullptr),
-    cardsDue(cards)
+   viewer(nullptr)
 {
-    viewer = new CardViewer(cards, this);
+    cardsDue = linkedDeck->dueToday();
+    viewer = new CardViewer(cardsDue, this);
     ui->setupUi(this);
     ui->contentVBox->addWidget(viewer);
     grabKeyboard();

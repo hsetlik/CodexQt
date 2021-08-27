@@ -96,7 +96,7 @@ class CardWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit CardWidget(Deck* deck, std::vector<Card*> cards, QWidget *parent = nullptr);
+    explicit CardWidget(Deck* deck, QWidget *parent = nullptr);
     Deck* const linkedDeck;
     void nextCard();
     void keyPressEvent(QKeyEvent* event) override;

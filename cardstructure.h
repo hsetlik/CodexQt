@@ -112,12 +112,13 @@ struct PhrasePairCards
 {
     PhrasePairCards(PhrasePair* parent);
     PhrasePairCards(QJsonObject& obj);
-    std::vector<NtaCard> ntaCards;
-    std::vector<ClozeCard> clozeCards;
-    FullCard* full;
+    //store all the cards as unique_ptrs and only instantiate card subclasses inside the PhrasePairCards class
+    //Outside of this class, all access to and manipulation of card objects should be done via pointer to object of this class
+    std::vector<std::unique_ptr<NtaCard>> ntaCards;
+    std::vector<std::unique_ptr<ClozeCard>> clozeCards;
+    std::unique_ptr<FullCard> full;
     QJsonObject getPairJson();
     void addAllToVector(std::vector<Card*>& allCards);
-    static void pushWithCast(Card* card, std::vector<Card*>& array);
 private:
     //adds all the cards to an external array for storing a deck of multiple phrase pairs
     void appendToDeckArray(QJsonArray& array);
@@ -134,12 +135,12 @@ class Deck
 public:
     Deck(std::string name = "default_deck");
     ~Deck();
-    void addPhrasePairFrom(QJsonObject& obj);
+    void addPhrasePairFrom(QJsonObject obj);
     std::vector<PhrasePairCards> phrasePairs;
     std::vector<Card*> allCards;
     std::vector<Card*> dueToday();
     int numDueToday();
-    void addNewPairs(std::vector<PhrasePairCards>& newPairs);
+    void addNewPairs(QJsonArray newPairs);
     void saveToFile();
     std::string getName() {return deckName; }
     void pushBackDueDates(int numDays);

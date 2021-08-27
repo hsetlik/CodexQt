@@ -29,7 +29,6 @@ void DeckWidget::updateLabels()
 }
 void DeckWidget::on_studyButton_clicked()
 {
-    auto cardsDue = linkedDeck->dueToday();
-    emit studyScreenWith(cardsDue);
+    emit studyScreenWith();
 }
 

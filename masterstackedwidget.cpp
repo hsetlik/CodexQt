@@ -29,16 +29,15 @@ void MasterStackedWidget::switchToCardEditors()
 {
     setCurrentIndex(2);
 }
-void MasterStackedWidget::switchToStudyView(std::vector<Card*> cards)
+void MasterStackedWidget::switchToStudyView()
 {
-    studyView.reset(new CardWidget(&*currentDeck, cards, this));
+    studyView.reset(new CardWidget(&*currentDeck, this));
     if(!stackContains(&*studyView))
         addWidget(&*studyView);
     setCurrentWidget(&*studyView);
 }
-void MasterStackedWidget::finishAddingCards(std::vector<PhrasePairCards> pairs)
+void MasterStackedWidget::finishAddingCards(QJsonArray pairs)
 {
-    printf("master widget received cards\n");
     if(currentDeck == nullptr)
         currentDeck.reset(new Deck());
     currentDeck->addNewPairs(pairs);

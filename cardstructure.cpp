@@ -1,4 +1,5 @@
 #include "cardstructure.h"
+#include <memory>
 NtaCard::NtaCard(std::string native, std::string target, PhrasePair* parent) :
     Card(parent, CardType::NTA),
     nativeWord(native),
@@ -113,14 +114,14 @@ PhrasePairCards::PhrasePairCards(PhrasePair* pair) :
     fullTarget = pair->targetPhrase.fullPhrase;
     for(auto& nta : pair->ntaPairs)
     {
-        ntaCards.push_back(NtaCard(nta.first, nta.second, pair));
+        ntaCards.push_back(std::make_unique<NtaCard>(nta.first, nta.second, pair));
     }
     for(auto & cloze : pair->clozeWords)
     {
-        clozeCards.push_back(ClozeCard(cloze, pair));
+        clozeCards.push_back(std::make_unique<ClozeCard>(cloze, pair));
     }
     if(pair->includesFull())
-        full = new FullCard(pair);
+        full = std::make_unique<FullCard>(pair);
 }
 PhrasePairCards::PhrasePairCards(QJsonObject& obj) :
     full(nullptr)
@@ -133,28 +134,28 @@ PhrasePairCards::PhrasePairCards(QJsonObject& obj) :
     {
         printf("Adding Nta Card\n");
         auto ntaObject = ntaArray[i].toObject();
-        ntaCards.push_back(NtaCard(ntaObject));
+        ntaCards.push_back(std::make_unique<NtaCard>(ntaObject));
     }
     auto clozeArray = obj["ClozeCards"].toArray();
     for(int i = 0; i < clozeArray.size(); ++i)
     {
         printf("adding cloze card\n");
         auto clozeObject = clozeArray.at(i).toObject();
-        clozeCards.push_back(ClozeCard(clozeObject));
+        clozeCards.push_back(std::make_unique<ClozeCard>(clozeObject));
 
     }
     if(obj.contains("FullCard"))
     {
         auto fullCardObject = obj["FullCard"].toObject();
-        full = new FullCard(fullCardObject);
+        full = std::make_unique<FullCard>(fullCardObject);
     }
 }
 QJsonArray PhrasePairCards::getNtaJsons()
 {
     QJsonArray ntaArray;
-    for(auto card : ntaCards)
+    for(auto& card : ntaCards)
     {
-        auto newVal = QJsonValue(card.getJson());
+        auto newVal = QJsonValue(card->getJson());
         ntaArray.append(newVal);
     }
     return ntaArray;
@@ -162,9 +163,9 @@ QJsonArray PhrasePairCards::getNtaJsons()
 QJsonArray PhrasePairCards::getClozeJsons()
 {
     QJsonArray clozeArray;
-    for(auto cloze : clozeCards)
+    for(auto& cloze : clozeCards)
     {
-        auto newVal = QJsonValue(cloze.getJson());
+        auto newVal = QJsonValue(cloze->getJson());
         clozeArray.append(newVal);
     }
     return clozeArray;
@@ -187,14 +188,19 @@ void PhrasePairCards::appendToDeckArray(QJsonArray &array)
         array.append(fullJson);
     }
 }
-void PhrasePairCards::addAllToVector(std::vector<Card*>& allCards)
+//add pointers to all the cards to the array
+void PhrasePairCards::addAllToVector(std::vector<Card*>& array)
 {
-    for(auto& card : ntaCards)
-        pushWithCast(&card, allCards);
-    for(auto& card : clozeCards)
-        pushWithCast(&card, allCards);
-    if(full != nullptr)
-        pushWithCast(full, allCards);
+    for(auto& nta : ntaCards)
+    {
+        array.push_back(&*nta);
+    }
+    for(auto& cloze : clozeCards)
+    {
+        array.push_back(&*cloze);
+    }
+    if(full.get() != nullptr)
+        array.push_back(&*full);
 }
 QJsonObject PhrasePairCards::getPairJson()
 {
@@ -210,25 +216,6 @@ QJsonObject PhrasePairCards::getPairJson()
         obj["FullCard"] = full->getJson();
     return obj;
 }
-void PhrasePairCards::pushWithCast(Card* card, std::vector<Card*>& array)
-{
-    if(card->cardType == CardType::NTA)
-    {
-        auto pNta = dynamic_cast<NtaCard*>(card);
-        array.push_back(pNta);
-    }
-    else if(card->cardType == CardType::Cloze)
-    {
-        auto pCLoze = dynamic_cast<ClozeCard*>(card);
-        array.push_back(pCLoze);
-    }
-    else if(card->cardType == CardType::Full)
-    {
-        auto pFull = dynamic_cast<FullCard*>(card);
-        array.push_back(pFull);
-    }
-}
-
 //===============================================================================
 Deck::Deck(std::string name) :
     deckName(name)
@@ -290,11 +277,11 @@ int Deck::numDueToday()
      }
      return numDue;
 }
-void Deck::addPhrasePairFrom(QJsonObject &obj)
+void Deck::addPhrasePairFrom(QJsonObject obj)
 {
-    auto newPair = PhrasePairCards(obj);
-    phrasePairs.push_back(newPair);
-    newPair.addAllToVector(allCards);
+
+    phrasePairs.push_back(PhrasePairCards(obj));
+    phrasePairs.back().addAllToVector(allCards);
 }
 std::vector<Card*> Deck::dueToday()
 {
@@ -328,14 +315,13 @@ QJsonArray Deck::getPairJsons()
     }
     return arr;
 }
-void Deck::addNewPairs(std::vector<PhrasePairCards>& newPairs)
+void Deck::addNewPairs(QJsonArray newPairs)
 {
-    for(auto& pair : newPairs)
+    for(int i = 0; i < newPairs.size(); ++i)
     {
-        phrasePairs.push_back(pair);
-        pair.addAllToVector(allCards);
+        auto pairObj = newPairs[i].toObject();
+        addPhrasePairFrom(pairObj);
     }
-    printf("%d new pairs added to deck\n", (int)newPairs.size());
 }
 void Deck::pushBackDueDates(int numDays)
 {
