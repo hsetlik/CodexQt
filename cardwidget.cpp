@@ -40,7 +40,7 @@ ClozeContent::ClozeContent(Card* _card, QWidget* parent) :
     auto clozeWord = card->getBackData();
     int x= 5;
     int y = 5;
-    for(auto word : allWords)
+    for(auto& word : allWords)
     {
         auto label = new QLabel(word.c_str());
         label->move(x, y);
@@ -64,7 +64,6 @@ void ClozeContent::flip()
 {
     clozeBox->setVisible(false);
     auto card = dynamic_cast<ClozeCard*>(linkedCard);
-    QString qAnswer = card->getBackData().c_str();
     for(auto l : labels)
     {
         l->setVisible(true);
@@ -113,17 +112,8 @@ CardWidget::CardWidget(Deck* deck, std::vector<Card*> cards, QWidget *parent) :
 
 void CardWidget::nextCard()
 {
-    if(!currentContent)
-    {
-        updateContent();
-        ui->contentVBox->addWidget(&*currentContent);
-    }
-    else
-    {
-        ui->contentVBox->removeWidget(&*currentContent);
-        updateContent();
-        ui->contentVBox->addWidget(&*currentContent);
-    }
+    updateContent();
+    ui->contentVBox->addWidget(&*currentContent);
     currentContent->setVisible(true);
     setButtonsVisible(false);
 }
@@ -157,6 +147,10 @@ void CardWidget::on_button4_clicked()
 }
 void CardWidget::updateContent()
 {
+    if(currentContent)
+    {
+        ui->contentVBox->removeWidget(&*currentContent);
+    }
     auto next = cardsDue[0];
     if(!next)
     {

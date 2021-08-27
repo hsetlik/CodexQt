@@ -11,7 +11,7 @@ public:
     explicit CardContent(Card* c, QWidget* parent = nullptr);
     virtual ~CardContent() {}
     Card* const linkedCard;
-    virtual void flip()=0;
+    virtual void flip() {}
     virtual void setDueDate(int answerButton)
     {
         const int daysPerButton[] = {1, 3, 5, 10};
