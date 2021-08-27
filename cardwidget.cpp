@@ -6,6 +6,7 @@ CardContent::CardContent(Card* c, QWidget* parent) :
     linkedCard(c)
 {
     printf("Creating card content\n");
+
 }
 //===========================================================================
 NtaContent::NtaContent(Card* card, QWidget* parent) :
