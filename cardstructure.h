@@ -20,11 +20,6 @@ struct Card
     }
     Card(QJsonObject& obj) : cardType(getCardType(obj))
     {
-        auto keys = obj.keys();
-        for(auto key : keys)
-        {
-            printf("%s: %s\n", key.toStdString().c_str(), obj[key].toString().toStdString().c_str());
-        }
         auto dateString = obj["DateNextDue"].toString();
         dateNextDue = QDateTime::fromString(dateString);
         parentPairId = obj["ParentPairId"].toString();

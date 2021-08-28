@@ -17,6 +17,13 @@ public:
         const int daysPerButton[] = {1, 3, 5, 10};
         linkedCard->setDueIn(daysPerButton[answerButton]);
     }
+    void keyPressEvent(QKeyEvent* e) override
+    {
+        if(e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter)
+            emit checkAnswer();
+    }
+signals:
+    void checkAnswer();
 };
 //==========================================================
 class NtaContent : public CardContent
@@ -77,8 +84,12 @@ class CardViewer : public QWidget
     Q_OBJECT
 public:
     explicit CardViewer(std::vector<Card*>& cards, QWidget *parent = nullptr);
+    CardContent* getCurrentContent() {return dynamic_cast<CardContent*>(currentWidget); }
 public slots:
     void nextCard();
+    void flip();
+signals:
+    void cardFlipped();
 private:
     std::vector<Card*> allCards;
     QVBoxLayout* layout;
@@ -99,7 +110,6 @@ public:
     explicit CardWidget(Deck* deck, QWidget *parent = nullptr);
     Deck* const linkedDeck;
     void nextCard();
-    void keyPressEvent(QKeyEvent* event) override;
     ~CardWidget();
 private slots:
     void on_button1_clicked();
@@ -109,6 +119,8 @@ private slots:
     void on_button3_clicked();
 
     void on_button4_clicked();
+
+    void submitCard();
 private:
     void updateContent();
     void setButtonsVisible(bool shouldBeVisible);

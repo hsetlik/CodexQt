@@ -11,7 +11,7 @@ NtaCard::NtaCard(QJsonObject& obj) :
     nativeWord(""),
     targetWord("")
 {
-    printf("Creating NTA from JSON\n");
+    //printf("Creating NTA from JSON\n");
     auto qNative = obj["NativeWord"].toString();
     nativeWord = qNative.toStdString();
     auto qTarget = obj["TargetWord"].toString();
@@ -40,7 +40,7 @@ ClozeCard::ClozeCard(QJsonObject& obj) :
     clozeSentence(""),
     answer("")
 {
-    printf("Creating Cloze from JSON\n");
+    //printf("Creating Cloze from JSON\n");
     auto qAnswer = obj["ClozeWord"].toString();
     fullTarget = obj["FullTarget"].toString().toStdString();
     clozeSentence = fullTarget;
@@ -132,14 +132,14 @@ PhrasePairCards::PhrasePairCards(QJsonObject& obj) :
     auto ntaArray = obj["NtaCards"].toArray();
     for(int i = 0; i < ntaArray.size(); ++i)
     {
-        printf("Adding Nta Card\n");
+        //printf("Adding Nta Card\n");
         auto ntaObject = ntaArray[i].toObject();
         ntaCards.push_back(std::make_unique<NtaCard>(ntaObject));
     }
     auto clozeArray = obj["ClozeCards"].toArray();
     for(int i = 0; i < clozeArray.size(); ++i)
     {
-        printf("adding cloze card\n");
+        //printf("adding cloze card\n");
         auto clozeObject = clozeArray.at(i).toObject();
         clozeCards.push_back(std::make_unique<ClozeCard>(clozeObject));
 
@@ -301,8 +301,8 @@ QJsonObject Deck::getDeckAsObject()
         {"DeckName", deckName.c_str()},
         {"PhrasePairs", getPairJsons()}
     };
-    auto numPairs = obj["PhrasePairs"].toArray().size();
-    printf("Deck has %d pairs\n", numPairs);
+    //auto numPairs = obj["PhrasePairs"].toArray().size();
+    //printf("Deck has %d pairs\n", numPairs);
     return obj;
 }
 QJsonArray Deck::getPairJsons()

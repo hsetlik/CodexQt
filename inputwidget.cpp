@@ -315,7 +315,7 @@ void InputWidget::prepareEditorsFor(std::vector<PhrasePair>& pairs)
     allPairs.clear();
     for(auto& pair : pairs)
         allPairs.push_back(pair);
-    printf("Preparing editors. . .\n");
+    //printf("Preparing editors. . .\n");
     pairIndex = -1;
     advancePhrasePair();
 }
@@ -328,7 +328,7 @@ void InputWidget::on_prevButton_clicked()
     if(createdCardSets.size() >= 1)
         createdCardSets.pop_back();
     ui->verticalLayout->removeWidget(&*currentPhrasePair);
-    printf("Displaying Pair Number %d\n", pairIndex);
+    //printf("Displaying Pair Number %d\n", pairIndex);
     auto& pairToAdd = allPairs[pairIndex];
     currentPhrasePair.reset(new PhrasePairWidget(&pairToAdd, this));
     ui->verticalLayout->addWidget(&*currentPhrasePair);
@@ -347,6 +347,6 @@ void InputWidget::on_fullBox_stateChanged(int)
 }
 void InputWidget::on_finishButton_clicked()
 {
-    printf("Sending %d new pairs\n", (int)createdCardSets.size());
+    //printf("Sending %d new pairs\n", (int)createdCardSets.size());
     emit returnNewPairCards(getPairCardsAsArray());
 }
