@@ -5,25 +5,29 @@ CardContent::CardContent(Card* c, QWidget* parent) :
     QWidget(parent),
     linkedCard(c)
 {
-    grabKeyboard();
+    setFocusPolicy(Qt::FocusPolicy::StrongFocus);
+
 }
 //===========================================================================
 NtaContent::NtaContent(Card* card, QWidget* parent) :
     CardContent(card, parent),
     targetLabel(nullptr),
-    nativeLabel(nullptr)
+    nativeLabel(nullptr),
+    layout(nullptr)
 {
     //printf("Creating NTA content. . .");
     targetStr = card->getFrontData().c_str();
     nativeStr = card->getFrontData().c_str();
-    targetLabel = new QLabel(targetStr);
-    nativeLabel = new QLabel(nativeStr);
+    targetLabel = new QLabel(targetStr, this);
+    nativeLabel = new QLabel(nativeStr, this);
+    targetLabel->setAttribute(Qt::WA_DeleteOnClose);
+    nativeLabel->setAttribute(Qt::WA_DeleteOnClose);
 
-    QVBoxLayout layout;
-    layout.addWidget(targetLabel);
-    layout.addWidget(nativeLabel);
-    nativeLabel->setVisible(false);
-    setLayout(&layout);
+    layout = new QVBoxLayout;
+    layout->addWidget(targetLabel);
+    layout->addWidget(nativeLabel);
+    //nativeLabel->setVisible(false);
+    setLayout(layout);
 }
 void NtaContent::flip()
 {
@@ -40,9 +44,10 @@ ClozeContent::ClozeContent(Card* _card, QWidget* parent) :
     auto clozeWord = card->getBackData();
     int x= 5;
     int y = 5;
+    //auto layout = new QHBoxLayout;
     for(auto& word : allWords)
     {
-        auto label = new QLabel(word.c_str());
+        auto label = new QLabel(word.c_str(), this);
         label->move(x, y);
         label->show();
         label->setAttribute(Qt::WA_DeleteOnClose);
@@ -108,6 +113,7 @@ CardViewer::CardViewer(std::vector<Card*>& cards, QWidget *parent) :
     QObject::connect(dynamic_cast<CardContent*>(newWidget), &CardContent::checkAnswer, this, &CardViewer::flip);
     layout->addWidget(newWidget);
     currentWidget = newWidget;
+    newWidget = nullptr;
     setLayout(layout);
 }
 
@@ -116,11 +122,12 @@ void CardViewer::nextCard()
     ++cardIdx;
     if(cardIdx >= (int)allCards.size())
         return; //TODO: emit a signal here to finish study mode
-    newWidget = CardContentGenerator::getContentFor(allCards[cardIdx], this);
-    QObject::connect(dynamic_cast<CardContent*>(newWidget), &CardContent::checkAnswer, this, &CardViewer::flip);
-    layout->replaceWidget(currentWidget, newWidget);
+    layout->removeWidget(currentWidget);
+    //newWidget = CardContentGenerator::getContentFor(allCards[cardIdx], this);
     delete currentWidget;
     currentWidget = newWidget;
+    newWidget = nullptr;
+    QObject::connect(dynamic_cast<CardContent*>(currentWidget), &CardContent::checkAnswer, this, &CardViewer::flip);
 }
 void CardViewer::flip()
 {
