@@ -141,6 +141,11 @@ void CardViewer::nextCard()
         emit finishStudyMode();
     }
 }
+void CardViewer::repeatCard()
+{
+    auto card = currentContent->linkedCard;
+    allCards.push_back(card);
+}
 void CardViewer::flip()
 {
     currentContent->flip();
@@ -167,6 +172,14 @@ void CardViewer::addContentForCard(Card* card)
     contentLayout->addWidget(newContent);
     currentContent = newContent;
 }
+std::vector<int> CardViewer::lengthsForCard()
+{
+    auto numAnswers = currentContent->linkedCard->getTimesAnswered();
+    int lHard = Card::daysToDelay(numAnswers, 2);
+    int lMed = Card::daysToDelay(numAnswers, 3);
+    int lEasy = Card::daysToDelay(numAnswers, 4);
+    return {lHard, lMed, lEasy};
+}
 //===========================================================================
 CardWidget::CardWidget(Deck* deck, QWidget *parent) :
     QWidget(parent),
@@ -180,12 +193,16 @@ CardWidget::CardWidget(Deck* deck, QWidget *parent) :
     ui->setupUi(this);
     ui->contentVBox->addWidget(viewer);
     connect(viewer, &CardViewer::finishStudyMode, this, &CardWidget::finishStudying);
+    auto newValues = viewer->lengthsForCard();
+    setButtonDayValues(newValues[0], newValues[1], newValues[2]);
     setButtonsVisible(false);
 }
 
 void CardWidget::nextCard()
 {
     viewer->nextCard();
+    auto newValues = viewer->lengthsForCard();
+    setButtonDayValues(newValues[0], newValues[1], newValues[2]);
     setButtonsVisible(false);
 }
 CardWidget::~CardWidget()
@@ -195,6 +212,7 @@ CardWidget::~CardWidget()
 void CardWidget::on_button1_clicked()
 {
     viewer->currentContent->linkedCard->updateWithAnswer(1);
+    viewer->repeatCard();
     nextCard();
 }
 void CardWidget::on_button2_clicked()
@@ -227,4 +245,13 @@ void CardWidget::submitCard()
 void CardWidget::finishStudying()
 {
     emit dueCardsFinished();
+}
+void CardWidget::setButtonDayValues(int l1, int l2, int l3)
+{
+    QString hStr = "Hard (" + QString::number(l1) + " days)";
+    QString mStr = "Medium (" + QString::number(l2) + " days)";
+    QString eStr = "Easy (" + QString::number(l3) + " days)";
+    ui->button2->setText(hStr);
+    ui->button3->setText(mStr);
+    ui->button4->setText(eStr);
 }

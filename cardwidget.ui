@@ -44,21 +44,21 @@
     <item>
      <widget class="QPushButton" name="button2">
       <property name="text">
-       <string>Hard</string>
+       <string>Hard (x days)</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QPushButton" name="button3">
       <property name="text">
-       <string>Medium</string>
+       <string>Medium (x days)</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QPushButton" name="button4">
       <property name="text">
-       <string>Easy</string>
+       <string>Easy (x days)</string>
       </property>
      </widget>
     </item>

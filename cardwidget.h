@@ -65,6 +65,8 @@ class CardViewer : public QWidget
 public:
     explicit CardViewer(std::vector<Card*>& cards, QWidget *parent = nullptr);
     void nextCard();
+    void repeatCard();
+    std::vector<int> lengthsForCard();
 public slots:
     void flip();
 signals:
@@ -91,6 +93,7 @@ public:
     explicit CardWidget(Deck* deck, QWidget *parent = nullptr);
     Deck* const linkedDeck;
     void nextCard();
+
     ~CardWidget();
 signals:
     void dueCardsFinished();
@@ -108,6 +111,7 @@ private slots:
     void finishStudying();
 private:
     void setButtonsVisible(bool shouldBeVisible);
+    void setButtonDayValues(int l1, int l2, int l3);
     Ui::CardWidget *ui;
     CardViewer* viewer;
     std::vector<Card*> cardsDue;

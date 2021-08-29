@@ -34,6 +34,7 @@ private slots:
     void switchToDeckView()
     {
         setCurrentIndex(0);
+        deckScreen->updateLabels();
     }
 public slots:
     void finishAddingCards(QJsonArray pairs);

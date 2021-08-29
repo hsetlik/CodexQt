@@ -47,10 +47,12 @@ struct Card
     //this is the core of the SRS algorithm. figure out how to do it correctly at some point
     static int daysToDelay(int numAnswers, int lastAnswer)
     {
+
         if(lastAnswer == 1)
             return 1;
-        else
-            return (int)std::sqrt(numAnswers) * lastAnswer;
+        if(numAnswers == 0)
+            numAnswers += 1;
+        return 12 * (lastAnswer / (numAnswers * 0.5f));
     }
     virtual ~Card() {}
     const CardType cardType;
@@ -81,6 +83,8 @@ struct Card
     {
         return current >= dateNextDue;
     }
+    int getTimesAnswered() {return timesAnswered; }
+    int getLastAnswer() {return lastAnswer; }
 protected:
     QDateTime dateNextDue;
     QString parentPairId;

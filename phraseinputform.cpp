@@ -29,8 +29,6 @@ PhrasePair PhraseInputForm::newPairFromFields()
     auto sTarget = ui->targetLineEdit->text().toStdString();
     return PhrasePair(sNative, sTarget);
 }
-
-
 void PhraseInputForm::on_backButton_clicked()
 {
     if(addedPairs.size() < 1)
