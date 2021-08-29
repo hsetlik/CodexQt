@@ -41,7 +41,7 @@ ClozeCard::ClozeCard(QJsonObject& obj) :
     answer("")
 {
     //printf("Creating Cloze from JSON\n");
-    auto qAnswer = obj["ClozeWord"].toString();
+    answer = obj["ClozeWord"].toString().toStdString();
     fullTarget = obj["FullTarget"].toString().toStdString();
     clozeSentence = fullTarget;
     auto clozeIdx = clozeSentence.find(answer);

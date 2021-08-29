@@ -41,8 +41,9 @@ ClozeContent::ClozeContent(Card* _card, QWidget* parent) :
     clozeBox(nullptr)
 {
     auto card = dynamic_cast<ClozeCard*>(_card);
-    //printf("Creating cloze content. . . \n");
+    printf("Creating cloze content. . . \n");
     auto allWords = stdu::matchesAsVector(card->getFullTarget(), std::regex("\\w+"));
+    printf("Target phrase has %d words\n", (int)allWords.size());
     auto clozeWord = card->getBackData();
     int x= 5;
     int y = 5;
@@ -50,19 +51,18 @@ ClozeContent::ClozeContent(Card* _card, QWidget* parent) :
     for(auto& word : allWords)
     {
         auto label = new QLabel(word.c_str(), this);
+        printf("Cloze label for word: %s\n", word.c_str());
         label->move(x, y);
         label->show();
         label->setAttribute(Qt::WA_DeleteOnClose);
         x += label->width() + 2;
         if(word == clozeWord)
         {
-            label->setVisible(false);
-            int length = label->text().length();
+            printf("Cloze word is: %s\n", word.c_str());
             clozeBox = new QLineEdit(this);
-            clozeBox->move(x, y);
-            clozeBox->setMaxLength(length);
-            clozeBox->setMaximumWidth(label->width());
+            clozeBox->setGeometry(label->x(), label->y(), label->width(), label->height());
             clozeBox->show();
+            label->setVisible(false);
         }
         labels.push_back(label);
     }
@@ -84,11 +84,11 @@ FullContent::FullContent(Card* card, QWidget* parent) :
 {
     int y = 5;
     int x = 5;
-    fullTarget = new QLabel(card->getFrontData().c_str());
+    fullTarget = new QLabel(card->getFrontData().c_str(), this);
     fullTarget->move(x, y);
     fullTarget->show();
     y += fullTarget->height() * 2;
-    fullNative = new QLabel(card->getBackData().c_str());
+    fullNative = new QLabel(card->getBackData().c_str(), this);
     fullNative->move(x, y);
     fullNative->show();
     fullNative->setVisible(false);
@@ -106,18 +106,53 @@ void FullContent::flip()
 CardViewer::CardViewer(std::vector<Card*>& cards, QWidget *parent) :
     QWidget(parent),
     allCards(cards),
-    cardIdx(0)
+    cardIdx(0),
+    contentLayout(new QVBoxLayout),
+    currentContent(nullptr)
 {
-
+    addContentForCard(allCards[0]);
+    setLayout(contentLayout);
 }
 
 void CardViewer::nextCard()
 {
-
+    //1. remove the existing content card
+    ++cardIdx;
+    if(!(cardIdx >= (int)allCards.size()))
+    {
+        addContentForCard(allCards[cardIdx]);
+    }
+    else
+    {
+        //emit a signal here to exit study mode
+        emit finishStudyMode();
+    }
 }
 void CardViewer::flip()
 {
-
+    currentContent->flip();
+    emit cardFlipped();
+}
+void CardViewer::addContentForCard(Card* card)
+{
+    if(currentContent != nullptr)
+        delete currentContent;
+    CardContent* newContent;
+    if(card->cardType == CardType::NTA)
+    {
+        newContent = new NtaContent(card, this);
+    }
+    else if(card->cardType == CardType::Cloze)
+    {
+        newContent = new ClozeContent(card, this);
+    }
+    else
+    {
+        newContent = new FullContent(card, this);
+    }
+    QObject::connect(newContent, &CardContent::checkAnswer, this, &CardViewer::flip);
+    contentLayout->addWidget(newContent);
+    currentContent = newContent;
 }
 //===========================================================================
 CardWidget::CardWidget(Deck* deck, QWidget *parent) :
@@ -131,6 +166,7 @@ CardWidget::CardWidget(Deck* deck, QWidget *parent) :
     QObject::connect(viewer, &CardViewer::cardFlipped, this, &CardWidget::submitCard);
     ui->setupUi(this);
     ui->contentVBox->addWidget(viewer);
+    connect(viewer, &CardViewer::finishStudyMode, this, &CardWidget::finishStudying);
     setButtonsVisible(false);
 }
 
@@ -170,4 +206,8 @@ void CardWidget::setButtonsVisible(bool shouldBeVisible)
 void CardWidget::submitCard()
 {
     setButtonsVisible(true);
+}
+void CardWidget::finishStudying()
+{
+    emit dueCardsFinished();
 }

@@ -31,11 +31,18 @@ private slots:
     void switchToCardEditors();
     void switchToPhraseInput();
     void switchToStudyView();
+    void switchToDeckView()
+    {
+        setCurrentIndex(0);
+    }
 public slots:
     void finishAddingCards(QJsonArray pairs);
 private:
     std::unique_ptr<Deck> currentDeck;
-    std::unique_ptr<CardWidget> studyView;
+    DeckWidget* deckScreen;
+    CardWidget* studyScreen;
+    PhraseInputForm* phraseScreen;
+    InputWidget* editorScreen;
 
 
 signals:

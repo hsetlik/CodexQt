@@ -63,47 +63,23 @@ private:
     QLineEdit* answerBox;
 };
 //==========================================================
-struct CardContentGenerator
-{
-    static CardContent* getContentFor(Card* card, QWidget* parent)
-    {
-        if(card->cardType == CardType::NTA)
-            return new NtaContent(card, parent);
-        else if(card->cardType == CardType::Cloze)
-        {
-            return new ClozeContent(card, parent);
-        }
-        else if(card->cardType == CardType::Full)
-            return new FullContent(dynamic_cast<FullCard*>(card), parent);
-        else
-            return nullptr;
-    }
-    static void resetUniquePtrFor(std::unique_ptr<CardContent>& ptr, Card* card, QWidget* parent)
-    {
-        if(card->cardType == CardType::NTA)
-            ptr.reset(new NtaContent(card, parent));
-        else if(card->cardType == CardType::Cloze)
-        {
-            ptr.reset(new ClozeContent(card, parent));
-        }
-        else if(card->cardType == CardType::Full)
-            ptr.reset(new FullContent(card, parent));
-    }
-};
-//==========================================================
 class CardViewer : public QWidget
 {
     Q_OBJECT
 public:
     explicit CardViewer(std::vector<Card*>& cards, QWidget *parent = nullptr);
-public slots:
     void nextCard();
+public slots:
     void flip();
 signals:
     void cardFlipped();
+    void finishStudyMode();
 private:
+    void addContentForCard(Card* card);
     std::vector<Card*> allCards;
     int cardIdx;
+    QVBoxLayout* contentLayout;
+    CardContent* currentContent;
 };
 
 //==========================================================
@@ -119,6 +95,8 @@ public:
     Deck* const linkedDeck;
     void nextCard();
     ~CardWidget();
+signals:
+    void dueCardsFinished();
 private slots:
     void on_button1_clicked();
 
@@ -129,8 +107,9 @@ private slots:
     void on_button4_clicked();
 
     void submitCard();
+
+    void finishStudying();
 private:
-    void updateContent();
     void setButtonsVisible(bool shouldBeVisible);
     Ui::CardWidget *ui;
     CardViewer* viewer;
