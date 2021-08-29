@@ -3,6 +3,12 @@
 
 #include "datastructures.h"
 #include <QtWidgets>
+/*
+ * TODO LIST updated 8/29:
+ * -Add comparison for text entry cards (cloze and full)
+ * -Improve layout of card views
+ * -Add answer history/difficulty system to the card data structure
+ */
 enum class CardType
 {
     NTA,
@@ -13,7 +19,9 @@ enum class CardType
 struct Card
 {
     Card(PhrasePair* pair, CardType type) :
-        cardType(type)
+        cardType(type),
+        timesAnswered(0),
+        lastAnswer(0)
     {
         dateNextDue = QDateTime::currentDateTime();
         parentPairId = pair->getJsonIdString().c_str();
@@ -23,6 +31,8 @@ struct Card
         auto dateString = obj["DateNextDue"].toString();
         dateNextDue = QDateTime::fromString(dateString);
         parentPairId = obj["ParentPairId"].toString();
+        timesAnswered = obj["TimesAnswered"].toInt();
+        lastAnswer = obj["LastAnswer"].toInt();
     }
     static CardType getCardType(QJsonObject& obj)
     {
@@ -49,6 +59,11 @@ struct Card
         };
         return obj;
     }
+    void updateWithAnswer(int answer)
+    {
+        lastAnswer = answer;
+        ++timesAnswered;
+    }
     void setDueIn(int numDays)
     {
         dateNextDue = dateNextDue.addDays(numDays);
@@ -60,6 +75,8 @@ struct Card
 protected:
     QDateTime dateNextDue;
     QString parentPairId;
+    int timesAnswered;
+    int lastAnswer;
 };
 //=================================================================================
 struct NtaCard : public Card
@@ -84,10 +101,12 @@ public:
     std::string getBackData() override {return answer; }
     QJsonObject getJson() override;
     std::string getFullTarget(){return fullTarget; }
+    std::string getFullNative(){return fullNative; }
 private:
     std::string clozeSentence;
     std::string answer;
     std::string fullTarget;
+    std::string fullNative;
 };
 //=================================================================================
 struct FullCard : public Card

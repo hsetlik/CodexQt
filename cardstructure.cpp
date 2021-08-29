@@ -25,6 +25,7 @@ ClozeCard::ClozeCard(std::string toRemove, PhrasePair* parent) :
     answer(toRemove)
 {
     fullTarget = parent->targetPhrase.fullPhrase;
+    fullNative = parent->nativePhrase.fullPhrase;
     clozeSentence = fullTarget;
     auto clozeIdx = clozeSentence.find(answer);
     if(clozeIdx != std::string::npos)
@@ -42,7 +43,10 @@ ClozeCard::ClozeCard(QJsonObject& obj) :
 {
     //printf("Creating Cloze from JSON\n");
     answer = obj["ClozeWord"].toString().toStdString();
-    fullTarget = obj["FullTarget"].toString().toStdString();
+    auto qTarget = obj["FullTarget"].toString();
+    fullTarget = qTarget.toStdString();
+    auto pairId = obj["ParentPairId"].toString();
+    fullNative = pairId.remove(qTarget).toStdString();
     clozeSentence = fullTarget;
     auto clozeIdx = clozeSentence.find(answer);
     if(clozeIdx != std::string::npos)
@@ -77,7 +81,9 @@ QJsonObject NtaCard::getJson()
         {"ParentPairId", parentPairId},
         {"NativeWord", nativeWord.c_str()},
         {"TargetWord", targetWord.c_str()},
-        {"DateNextDue", dateNextDue.toString()}
+        {"DateNextDue", dateNextDue.toString()},
+        {"TimesAnswered", timesAnswered},
+        {"LastAnswer", lastAnswer}
     };
     return obj;
 }
@@ -89,7 +95,9 @@ QJsonObject ClozeCard::getJson()
         {"ParentPairId", parentPairId},
         {"FullTarget", fullTarget.c_str()},
         {"ClozeWord", answer.c_str()},
-        {"DateNextDue", dateNextDue.toString()}
+        {"DateNextDue", dateNextDue.toString()},
+        {"TimesAnswered", timesAnswered},
+        {"LastAnswer", lastAnswer}
     };
     return obj;
 }
@@ -101,7 +109,9 @@ QJsonObject FullCard::getJson()
         {"ParentPairId", parentPairId},
         {"NativePhrase", fullNative.c_str()},
         {"TargetPhrase", fullTarget.c_str()},
-        {"DateNextDue", dateNextDue.toString()}
+        {"DateNextDue", dateNextDue.toString()},
+        {"TimesAnswered", timesAnswered},
+        {"LastAnswer", lastAnswer}
     };
     return obj;
 }

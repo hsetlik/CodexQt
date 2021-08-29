@@ -42,13 +42,13 @@ ClozeContent::ClozeContent(Card* _card, QWidget* parent) :
 {
     auto card = dynamic_cast<ClozeCard*>(_card);
     printf("Creating cloze content. . . \n");
-    auto allWords = stdu::matchesAsVector(card->getFullTarget(), std::regex("\\w+"));
-    printf("Target phrase has %d words\n", (int)allWords.size());
+    auto tWords = stdu::matchesAsVector(card->getFullTarget(), std::regex("\\w+"));
+    printf("Target phrase has %d words\n", (int)tWords.size());
     auto clozeWord = card->getBackData();
     int x= 5;
     int y = 5;
     //auto layout = new QHBoxLayout;
-    for(auto& word : allWords)
+    for(auto& word : tWords)
     {
         auto label = new QLabel(word.c_str(), this);
         printf("Cloze label for word: %s\n", word.c_str());
@@ -64,13 +64,26 @@ ClozeContent::ClozeContent(Card* _card, QWidget* parent) :
             clozeBox->show();
             label->setVisible(false);
         }
-        labels.push_back(label);
+        targetLabels.push_back(label);
+    }
+    x = 5;
+    y = 20;
+    auto nativeWords = stdu::matchesAsVector(card->getFullNative(), std::regex("\\w+"));
+    for(auto& word : nativeWords)
+    {
+        auto label = new QLabel(word.c_str(), this);
+        label->move(x, y);
+        label->show();
+        label->setAttribute(Qt::WA_DeleteOnClose);
+        x += label->width() + 2;
+        nativeLabels.push_back(label);
     }
 }
 void ClozeContent::flip()
 {
+    //auto answerStr = clozeBox->text();
     clozeBox->setVisible(false);
-    for(auto l : labels)
+    for(auto l : targetLabels)
     {
         l->setVisible(true);
     }

@@ -48,7 +48,8 @@ public:
     void flip() override;
 
 private:
-    std::vector<QLabel*> labels;
+    std::vector<QLabel*> targetLabels;
+    std::vector<QLabel*> nativeLabels;
     QLineEdit* clozeBox;
 };
 //==========================================================
