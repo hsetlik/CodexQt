@@ -78,6 +78,17 @@ struct CardContentGenerator
         else
             return nullptr;
     }
+    static void resetUniquePtrFor(std::unique_ptr<CardContent>& ptr, Card* card, QWidget* parent)
+    {
+        if(card->cardType == CardType::NTA)
+            ptr.reset(new NtaContent(card, parent));
+        else if(card->cardType == CardType::Cloze)
+        {
+            ptr.reset(new ClozeContent(card, parent));
+        }
+        else if(card->cardType == CardType::Full)
+            ptr.reset(new FullContent(card, parent));
+    }
 };
 //==========================================================
 class CardViewer : public QWidget
@@ -85,7 +96,6 @@ class CardViewer : public QWidget
     Q_OBJECT
 public:
     explicit CardViewer(std::vector<Card*>& cards, QWidget *parent = nullptr);
-    CardContent* getCurrentContent() {return dynamic_cast<CardContent*>(currentWidget); }
 public slots:
     void nextCard();
     void flip();
@@ -93,10 +103,7 @@ signals:
     void cardFlipped();
 private:
     std::vector<Card*> allCards;
-    QVBoxLayout* layout;
     int cardIdx;
-    QWidget* currentWidget;
-    QWidget* newWidget;
 };
 
 //==========================================================

@@ -15,9 +15,11 @@ NtaContent::NtaContent(Card* card, QWidget* parent) :
     nativeLabel(nullptr),
     layout(nullptr)
 {
-    //printf("Creating NTA content. . .");
+    printf("\nNew Nta Content\n");
     targetStr = card->getFrontData().c_str();
-    nativeStr = card->getFrontData().c_str();
+    printf("Target: %s\n", targetStr.toStdString().c_str());
+    nativeStr = card->getBackData().c_str();
+    printf("Native: %s\n", card->getBackData().c_str());
     targetLabel = new QLabel(targetStr, this);
     nativeLabel = new QLabel(nativeStr, this);
     targetLabel->setAttribute(Qt::WA_DeleteOnClose);
@@ -26,7 +28,7 @@ NtaContent::NtaContent(Card* card, QWidget* parent) :
     layout = new QVBoxLayout;
     layout->addWidget(targetLabel);
     layout->addWidget(nativeLabel);
-    //nativeLabel->setVisible(false);
+    nativeLabel->setVisible(false);
     setLayout(layout);
 }
 void NtaContent::flip()
@@ -104,36 +106,18 @@ void FullContent::flip()
 CardViewer::CardViewer(std::vector<Card*>& cards, QWidget *parent) :
     QWidget(parent),
     allCards(cards),
-    cardIdx(0),
-    currentWidget(nullptr),
-    newWidget(nullptr)
+    cardIdx(0)
 {
-    layout = new QVBoxLayout;
-    newWidget = CardContentGenerator::getContentFor(allCards[cardIdx], this);
-    QObject::connect(dynamic_cast<CardContent*>(newWidget), &CardContent::checkAnswer, this, &CardViewer::flip);
-    layout->addWidget(newWidget);
-    currentWidget = newWidget;
-    newWidget = nullptr;
-    setLayout(layout);
+
 }
 
 void CardViewer::nextCard()
 {
-    ++cardIdx;
-    if(cardIdx >= (int)allCards.size())
-        return; //TODO: emit a signal here to finish study mode
-    layout->removeWidget(currentWidget);
-    //newWidget = CardContentGenerator::getContentFor(allCards[cardIdx], this);
-    delete currentWidget;
-    currentWidget = newWidget;
-    newWidget = nullptr;
-    QObject::connect(dynamic_cast<CardContent*>(currentWidget), &CardContent::checkAnswer, this, &CardViewer::flip);
+
 }
 void CardViewer::flip()
 {
-    auto currentCard = dynamic_cast<CardContent*>(currentWidget);
-    currentCard->flip();
-    emit cardFlipped();
+
 }
 //===========================================================================
 CardWidget::CardWidget(Deck* deck, QWidget *parent) :
