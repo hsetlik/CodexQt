@@ -194,18 +194,22 @@ CardWidget::~CardWidget()
 }
 void CardWidget::on_button1_clicked()
 {
+    viewer->currentContent->linkedCard->updateWithAnswer(1);
     nextCard();
 }
 void CardWidget::on_button2_clicked()
 {
+    viewer->currentContent->linkedCard->updateWithAnswer(2);
     nextCard();
 }
 void CardWidget::on_button3_clicked()
 {
+    viewer->currentContent->linkedCard->updateWithAnswer(3);
     nextCard();
 }
 void CardWidget::on_button4_clicked()
 {
+    viewer->currentContent->linkedCard->updateWithAnswer(4);
     nextCard();
 }
 void CardWidget::setButtonsVisible(bool shouldBeVisible)

@@ -12,11 +12,6 @@ public:
     virtual ~CardContent() {}
     Card* const linkedCard;
     virtual void flip() {}
-    virtual void setDueDate(int answerButton)
-    {
-        const int daysPerButton[] = {1, 3, 5, 10};
-        linkedCard->setDueIn(daysPerButton[answerButton]);
-    }
     void keyPressEvent(QKeyEvent* e) override
     {
         if(e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter)
@@ -80,6 +75,7 @@ private:
     std::vector<Card*> allCards;
     int cardIdx;
     QVBoxLayout* contentLayout;
+public:
     CardContent* currentContent;
 };
 
@@ -116,5 +112,4 @@ private:
     CardViewer* viewer;
     std::vector<Card*> cardsDue;
 };
-
 #endif // CARDWIDGET_H
