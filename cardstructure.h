@@ -171,10 +171,14 @@ public:
     void saveToFile();
     std::string getName() {return deckName; }
     void pushBackDueDates(int numDays);
+    QLocale getNativeLocale() {return nativeLocale; }
+    QLocale getTargetLocale() {return targetLocale; }
 private:
     std::string deckName;
     QJsonObject getDeckAsObject();
     QJsonArray getPairJsons();
+    QLocale nativeLocale;
+    QLocale targetLocale;
 
 };
 #endif // CARDSTRUCTURE_H

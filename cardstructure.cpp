@@ -248,6 +248,12 @@ Deck::Deck(std::string name) :
     printf("File has size: %d bytes\n", deckData.size());
     QJsonDocument doc(QJsonDocument::fromJson(deckData));
     auto masterObject = doc.object();
+    auto iNativeLocale = masterObject["NativeLocale"].toInt();
+    nativeLocale = QLocale((QLocale::Language) iNativeLocale);
+    auto iTargetLocale = masterObject["TargetLocale"].toInt();
+    targetLocale = QLocale((QLocale::Language) iTargetLocale);
+    printf("Native Language is: %s\n", nativeLocale.nativeLanguageName().toStdString().c_str());
+    printf("Target Language is: %s\n", targetLocale.nativeLanguageName().toStdString().c_str());
     //the master deck JSON data is stored as an object w/ two properties: "DeckName" : string, and "PhrasePairs" : array of objects
     auto pairArray = masterObject["PhrasePairs"].toArray();
     printf("%d pairs found\n", pairArray.size());
@@ -309,10 +315,10 @@ QJsonObject Deck::getDeckAsObject()
     QJsonObject obj
     {
         {"DeckName", deckName.c_str()},
+        {"NativeLocale", (int)nativeLocale.language()},
+        {"TargetLocale", (int)targetLocale.language()},
         {"PhrasePairs", getPairJsons()}
     };
-    //auto numPairs = obj["PhrasePairs"].toArray().size();
-    //printf("Deck has %d pairs\n", numPairs);
     return obj;
 }
 QJsonArray Deck::getPairJsons()

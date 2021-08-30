@@ -58,9 +58,27 @@ void MasterStackedWidget::openDeckWithName(QString name)
 
 void MasterStackedWidget::createNewDeck(QLocale native, QLocale target, std::string name)
 {
-    printf("Native Locale is: %s\n", native.name().toStdString().c_str());
-    printf("Target Locale is: %s\n", target.name().toStdString().c_str());
+    printf("Native Locale is: %s\n", native.nativeCountryName().toStdString().c_str());
+    printf("Target Locale is: %s\n", target.nativeCountryName().toStdString().c_str());
     printf("Deck Name is: %s\n", name.c_str());
+    auto sDeckFile = name + ".json";
+    QString deckFileName = sDeckFile.c_str();
+    QFile loadFile(deckFileName);
+    if(!loadFile.open(QIODevice::ReadWrite | QIODevice::Truncate))
+        printf("File not loaded\n");
+    QJsonObject deckInfo;
+    deckInfo["DeckName"] = name.c_str();
+    deckInfo["NativeLocale"] = (int)native.language();
+    deckInfo["TargetLocale"] = (int)target.language();
+    QJsonArray array;
+    //just set up an empty array for the phrase pairs
+    deckInfo["PhrasePairs"] = array;
+    QJsonDocument deckDoc(deckInfo);
+    //write the document to the file
+    auto bytesWritten = loadFile.write(deckDoc.toJson());
+    printf("%lld bytes written to file\n", bytesWritten);
+    loadFile.close();
+    //now reload the current Deck object and deck list widget
     currentDeck.reset(new Deck(name));
     removeWidget(deckMenuScreen);
     delete deckMenuScreen;
