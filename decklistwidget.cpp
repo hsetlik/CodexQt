@@ -44,3 +44,4 @@ void DeckListWidget::deckButtonClicked()
     emit openDeck(name);
 }
 
+

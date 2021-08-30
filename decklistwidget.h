@@ -19,7 +19,7 @@ public:
     explicit DeckListWidget(QWidget *parent = nullptr);
     ~DeckListWidget();
 
-private slots:
+public slots:
     void on_newDeckButton_clicked() { emit launchNewDeckDialog(); }
     void on_manageDecksButon_clicked();
     void deckButtonClicked();

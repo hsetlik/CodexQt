@@ -54,5 +54,20 @@ void MasterStackedWidget::openDeckWithName(QString name)
     connect(phraseScreen, &PhraseInputForm::getPairList, this, &MasterStackedWidget::switchToCardEditors);
     connect(editorScreen, &InputWidget::returnNewPairCards, this, &MasterStackedWidget::finishAddingCards);
     connect(deckScreen, &DeckWidget::studyScreenWith, this, &MasterStackedWidget::switchToStudyView);
+}
 
+void MasterStackedWidget::createNewDeck(QLocale native, QLocale target, std::string name)
+{
+    printf("Native Locale is: %s\n", native.name().toStdString().c_str());
+    printf("Target Locale is: %s\n", target.name().toStdString().c_str());
+    printf("Deck Name is: %s\n", name.c_str());
+    currentDeck.reset(new Deck(name));
+    removeWidget(deckMenuScreen);
+    delete deckMenuScreen;
+    //just re-run code from constructor here...
+    deckMenuScreen = new DeckListWidget(this);
+    addWidget(deckMenuScreen);
+    setCurrentWidget(deckMenuScreen);
+    connect(deckMenuScreen, &DeckListWidget::openDeck, this, &MasterStackedWidget::openDeckWithName);
+    connect(deckMenuScreen, &DeckListWidget::launchNewDeckDialog, this, &MasterStackedWidget::switchToDeckCreatorView);
 }

@@ -52,6 +52,9 @@ class DeckCreatorWidget : public QWidget
 public:
     explicit DeckCreatorWidget(QWidget *parent = nullptr);
     ~DeckCreatorWidget();
+signals:
+    void newDeck(QLocale native, QLocale target, std::string name);
+    void abortNewDeck();
 
 private slots:
     void on_createButton_clicked();

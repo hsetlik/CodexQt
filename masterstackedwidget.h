@@ -25,6 +25,7 @@ private slots:
         deckCreator = new DeckCreatorWidget(this);
         addWidget(deckCreator);
         setCurrentWidget(deckCreator);
+        connect(deckCreator, &DeckCreatorWidget::newDeck, this, &MasterStackedWidget::createNewDeck);
     }
     void switchToCardEditors();
     void switchToPhraseInput();
@@ -34,6 +35,7 @@ private slots:
         setCurrentIndex(0);
         deckScreen->updateLabels();
     }
+    void createNewDeck(QLocale native, QLocale target, std::string name);
 public slots:
     void finishAddingCards(QJsonArray pairs);
     void openDeckWithName(QString name);
@@ -45,8 +47,6 @@ private:
     CardWidget* studyScreen;
     PhraseInputForm* phraseScreen;
     InputWidget* editorScreen;
-
-
 signals:
 
 };
