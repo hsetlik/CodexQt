@@ -185,10 +185,12 @@ CardWidget::CardWidget(Deck* deck, QWidget *parent) :
     QWidget(parent),
     linkedDeck(deck),
     ui(new Ui::CardWidget),
-   viewer(nullptr)
+   viewer(nullptr),
+   cardIdx(0)
 {
     cardsDue = linkedDeck->dueToday();
     viewer = new CardViewer(cardsDue, this);
+    numCards = (int)cardsDue.size();
     QObject::connect(viewer, &CardViewer::cardFlipped, this, &CardWidget::submitCard);
     ui->setupUi(this);
     ui->contentVBox->addWidget(viewer);
@@ -196,11 +198,14 @@ CardWidget::CardWidget(Deck* deck, QWidget *parent) :
     auto newValues = viewer->lengthsForCard();
     setButtonDayValues(newValues[0], newValues[1], newValues[2]);
     setButtonsVisible(false);
+    updateIndexLabel();
 }
 
 void CardWidget::nextCard()
 {
+    ++cardIdx;
     viewer->nextCard();
+    updateIndexLabel();
     auto newValues = viewer->lengthsForCard();
     setButtonDayValues(newValues[0], newValues[1], newValues[2]);
     setButtonsVisible(false);
@@ -213,6 +218,7 @@ void CardWidget::on_button1_clicked()
 {
     viewer->currentContent->linkedCard->updateWithAnswer(1);
     viewer->repeatCard();
+    ++numCards;
     nextCard();
 }
 void CardWidget::on_button2_clicked()
@@ -254,4 +260,9 @@ void CardWidget::setButtonDayValues(int l1, int l2, int l3)
     ui->button2->setText(hStr);
     ui->button3->setText(mStr);
     ui->button4->setText(eStr);
+}
+void CardWidget::updateIndexLabel()
+{
+    QString lStr = "Card " + QString::number(cardIdx) + "/" + QString::number(numCards);
+    ui->label->setText(lStr);
 }

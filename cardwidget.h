@@ -112,8 +112,11 @@ private slots:
 private:
     void setButtonsVisible(bool shouldBeVisible);
     void setButtonDayValues(int l1, int l2, int l3);
+    void updateIndexLabel();
     Ui::CardWidget *ui;
     CardViewer* viewer;
     std::vector<Card*> cardsDue;
+    int cardIdx;
+    int numCards;
 };
 #endif // CARDWIDGET_H

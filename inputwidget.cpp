@@ -18,7 +18,6 @@ void WordLabel::paintEvent(QPaintEvent *)
     auto textCorner = QPointF(cornerSize, cornerSize * 3.3f);
     painter.drawText(textCorner, text());
 }
-
 //==========================================================================================
 PhraseWidget::PhraseWidget(const QString& fullPhrase, PhrasePair* p, QWidget *parent) :
     QWidget(parent),

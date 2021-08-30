@@ -3,10 +3,7 @@
 
 #include <QWidget>
 #include <QStackedWidget>
-#include "inputwidget.h"
-#include "phraseinputform.h"
-#include "deckwidget.h"
-#include "cardwidget.h"
+#include "decklistwidget.h"
 /*
  * Pages and indeces:
  * 0: phrase input
@@ -38,8 +35,10 @@ private slots:
     }
 public slots:
     void finishAddingCards(QJsonArray pairs);
+    void openDeckWithName(QString name);
 private:
     std::unique_ptr<Deck> currentDeck;
+    DeckListWidget* deckMenuScreen;
     DeckWidget* deckScreen;
     CardWidget* studyScreen;
     PhraseInputForm* phraseScreen;
