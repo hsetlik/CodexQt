@@ -26,8 +26,6 @@ private slots:
 signals:
     void launchNewDeckDialog();
     void openDeck(QString name);
-
-
 private:
     Ui::DeckListWidget *ui;
 };

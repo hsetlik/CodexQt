@@ -8,6 +8,7 @@ MasterStackedWidget::MasterStackedWidget(QWidget *parent) :
     addWidget(deckMenuScreen);
     setCurrentWidget(deckMenuScreen);
     connect(deckMenuScreen, &DeckListWidget::openDeck, this, &MasterStackedWidget::openDeckWithName);
+    connect(deckMenuScreen, &DeckListWidget::launchNewDeckDialog, this, &MasterStackedWidget::switchToDeckCreatorView);
 }
 
 void MasterStackedWidget::switchToCardEditors()

@@ -3,12 +3,7 @@
 
 #include <QWidget>
 #include <QStackedWidget>
-#include "decklistwidget.h"
-/*
- * Pages and indeces:
- * 0: phrase input
- * 1: card setup
- */
+#include "deckcreatorwidget.h"
 
 class MasterStackedWidget : public QStackedWidget
 {
@@ -25,6 +20,12 @@ public:
         return false;
     }
 private slots:
+    void switchToDeckCreatorView()
+    {
+        deckCreator = new DeckCreatorWidget(this);
+        addWidget(deckCreator);
+        setCurrentWidget(deckCreator);
+    }
     void switchToCardEditors();
     void switchToPhraseInput();
     void switchToStudyView();
@@ -39,6 +40,7 @@ public slots:
 private:
     std::unique_ptr<Deck> currentDeck;
     DeckListWidget* deckMenuScreen;
+    DeckCreatorWidget* deckCreator;
     DeckWidget* deckScreen;
     CardWidget* studyScreen;
     PhraseInputForm* phraseScreen;

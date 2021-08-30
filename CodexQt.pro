@@ -12,6 +12,7 @@ SOURCES += \
     cardstructure.cpp \
     cardwidget.cpp \
     datastructures.cpp \
+    deckcreatorwidget.cpp \
     decklistwidget.cpp \
     deckwidget.cpp \
     inputwidget.cpp \
@@ -25,6 +26,7 @@ HEADERS += \
     cardstructure.h \
     cardwidget.h \
     datastructures.h \
+    deckcreatorwidget.h \
     decklistwidget.h \
     deckwidget.h \
     inputwidget.h \
@@ -35,6 +37,7 @@ HEADERS += \
 
 FORMS += \
     cardwidget.ui \
+    deckcreatorwidget.ui \
     decklistwidget.ui \
     deckwidget.ui \
     inputform.ui \
