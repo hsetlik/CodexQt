@@ -7,6 +7,7 @@
 #include <QString>
 #include <QRegExp>
 #include <QStringList>
+#include <QDebug>
 
 struct stdu
 {
@@ -38,6 +39,7 @@ struct RegexUtil
 {
     static std::vector<QString> regexMatches(QString body, QRegExp exp)
     {
+        qDebug() << "Full Phrase is: " << body;
         std::vector<QString> output;
         auto pos = exp.indexIn(body);
         if(pos == -1)
@@ -46,6 +48,7 @@ struct RegexUtil
         for(int i = 1; 1 < matches.size(); ++i)
         {
             output.push_back(matches[i]);
+            qDebug() << "Word is: " << matches[i];
         }
         return output;
     }

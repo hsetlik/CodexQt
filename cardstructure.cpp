@@ -243,10 +243,10 @@ Deck::Deck(QString name) :
     auto masterObject = doc.object();
     auto iNativeLocale = masterObject["NativeLocale"].toInt();
     nativeLocale = QLocale((QLocale::Language) iNativeLocale);
+    qDebug() << "Native Locale: " << nativeLocale.nativeCountryName();
     auto iTargetLocale = masterObject["TargetLocale"].toInt();
     targetLocale = QLocale((QLocale::Language) iTargetLocale);
-    printf("Native Language is: %s\n", nativeLocale.nativeLanguageName().toStdString().c_str());
-    printf("Target Language is: %s\n", targetLocale.nativeLanguageName().toStdString().c_str());
+    qDebug() << "Target Locale: " << targetLocale.nativeCountryName();
     //the master deck JSON data is stored as an object w/ two properties: "DeckName" : string, and "PhrasePairs" : array of objects
     auto pairArray = masterObject["PhrasePairs"].toArray();
     printf("%d pairs found\n", pairArray.size());

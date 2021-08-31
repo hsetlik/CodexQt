@@ -23,8 +23,9 @@ PhraseWidget::PhraseWidget(const QString& fullPhrase, PhrasePair* p, QWidget *pa
     QWidget(parent),
     linkedPair(p)
 {
-    auto exp = QRegExp("\\w+");
-    auto words = RegexUtil::regexMatches(fullPhrase, exp);
+    qDebug() << "Making editor widget with phrase: " << fullPhrase;
+    auto exp = QRegExp("\\s+");
+    auto words = fullPhrase.split(exp);
     int x = 5;
     int y = 5;
     for(auto& word : words)
