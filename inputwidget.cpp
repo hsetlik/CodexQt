@@ -291,9 +291,12 @@ void InputWidget::advancePhrasePair()
         createdCardSets.push_back(PhrasePairCards(currentPhrasePair->linkedPair));
     }
      ++pairIndex;
-    if(pairIndex >= (int)allPairs.size())
-        return;
     ui->verticalLayout->removeWidget(&*currentPhrasePair);
+    if(pairIndex >= (int)allPairs.size())
+    {
+        ui->finishButton->setVisible(true);
+        return;
+    }
     printf("Displaying Pair Number %d\n", pairIndex);
     auto& pairToAdd = allPairs[pairIndex];
     currentPhrasePair.reset(new PhrasePairWidget(&pairToAdd, this));

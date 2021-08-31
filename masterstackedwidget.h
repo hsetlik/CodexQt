@@ -32,7 +32,7 @@ private slots:
     void switchToStudyView();
     void switchToDeckView()
     {
-        setCurrentIndex(0);
+        setCurrentWidget(deckScreen);
         deckScreen->updateLabels();
     }
     void createNewDeck(QLocale native, QLocale target, QString name);

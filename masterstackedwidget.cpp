@@ -13,7 +13,7 @@ MasterStackedWidget::MasterStackedWidget(QWidget *parent) :
 
 void MasterStackedWidget::switchToCardEditors()
 {
-    setCurrentIndex(2);
+    setCurrentWidget(editorScreen);
 }
 void MasterStackedWidget::switchToStudyView()
 {
@@ -24,16 +24,15 @@ void MasterStackedWidget::switchToStudyView()
 }
 void MasterStackedWidget::finishAddingCards(QJsonArray pairs)
 {
-    if(currentDeck == nullptr)
-        currentDeck.reset(new Deck());
     currentDeck->addNewPairs(pairs);
     currentDeck->saveToFile();
-    setCurrentIndex(0); //go back to the deck view
+    auto name = currentDeck->getName();
+    openDeckWithName(name);
 }
 
 void MasterStackedWidget::switchToPhraseInput()
 {
-    setCurrentIndex(1);
+    setCurrentWidget(phraseScreen);
 }
 
 void MasterStackedWidget::openDeckWithName(QString name)
@@ -50,7 +49,6 @@ void MasterStackedWidget::openDeckWithName(QString name)
     editorScreen = new InputWidget(this);
     addWidget(editorScreen);
     addWidget(phraseScreen);
-    setCurrentWidget(phraseScreen);
     connect(deckScreen, &DeckWidget::goToInputScreen, this, &MasterStackedWidget::switchToPhraseInput);
     connect(phraseScreen, &PhraseInputForm::getPairList, editorScreen, &InputWidget::prepareEditorsFor);
     connect(phraseScreen, &PhraseInputForm::getPairList, this, &MasterStackedWidget::switchToCardEditors);
