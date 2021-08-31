@@ -9,7 +9,7 @@ DeckCreatorWidget::DeckCreatorWidget(QWidget *parent) :
     auto localeValues = CodexLang::langEnumsAndNames();
     for(auto& l : localeValues)
     {
-        QString name = l.first.c_str();
+        QString name = l.first;
         ui->nativeCB->addItem(name);
         ui->targetQB->addItem(name);
     }
@@ -23,12 +23,12 @@ DeckCreatorWidget::~DeckCreatorWidget()
 void DeckCreatorWidget::on_createButton_clicked()
 {
     auto langs = CodexLang::langEnumsAndNames();
-    auto sNative = ui->nativeCB->currentText().toStdString();
-    auto sTarget = ui->targetQB->currentText().toStdString();
+    auto sNative = ui->nativeCB->currentText();
+    auto sTarget = ui->targetQB->currentText();
     auto nLocale = QLocale((QLocale::Language)langs[sNative]);
     auto tLocale = QLocale((QLocale::Language)langs[sTarget]);
-    auto name = ui->deckNameEdit->text().toStdString();
-    printf("New deck is called: %s\n", name.c_str());
+    auto name = ui->deckNameEdit->text();
+    //printf("New deck is called: %s\n", name.c_str());
     emit newDeck(nLocale, tLocale, name);
 }
 void DeckCreatorWidget::on_cancelButton_clicked()

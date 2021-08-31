@@ -25,8 +25,8 @@ void PhraseInputForm::on_addButton_clicked()
 
 PhrasePair PhraseInputForm::newPairFromFields()
 {
-    auto sNative = ui->nativeLineEdit->text().toStdString();
-    auto sTarget = ui->targetLineEdit->text().toStdString();
+    auto sNative = ui->nativeLineEdit->text();
+    auto sTarget = ui->targetLineEdit->text();
     return PhrasePair(sNative, sTarget);
 }
 void PhraseInputForm::on_backButton_clicked()
@@ -37,8 +37,8 @@ void PhraseInputForm::on_backButton_clicked()
     }
     auto currentPhrase = addedPairs.back();
     addedPairs.pop_back();
-    QString sNative = currentPhrase.nativePhrase.fullPhrase.c_str();
-    QString sTarget = currentPhrase.targetPhrase.fullPhrase.c_str();
+    QString sNative = currentPhrase.nativePhrase.fullPhrase;
+    QString sTarget = currentPhrase.targetPhrase.fullPhrase;
     ui->nativeLineEdit->setText(sNative);
     ui->targetLineEdit->setText(sTarget);
 }
@@ -47,8 +47,8 @@ void PhraseInputForm::addDummyPairs(int pairsToAdd)
 {
     for(int i = 0; i < pairsToAdd; ++i)
     {
-        std::string sNative = "Dummy Native Phrase Number " + std::to_string(i);
-        std::string sTarget = "Dummy Target Phrase Number " + std::to_string(i);
+        QString sNative = "Dummy Native Phrase Number " + QString::number(i);
+        QString sTarget = "Dummy Target Phrase Number " + QString::number(i);
         addedPairs.push_back(PhrasePair(sNative, sTarget));
     }
 }

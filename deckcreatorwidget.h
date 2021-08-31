@@ -8,9 +8,9 @@
 class CodexLang
 {
 public:
-    static std::unordered_map<std::string, int> langEnumsAndNames()
+    static std::unordered_map<QString, int> langEnumsAndNames()
     {
-        std::unordered_map<std::string, int> output;
+        std::unordered_map<QString, int> output;
         output["Albanian"] = QLocale::Albanian;
         output["Belarusian"] = QLocale::Belarusian;
         output["Cantonese"] = QLocale::Cantonese;
@@ -53,7 +53,7 @@ public:
     explicit DeckCreatorWidget(QWidget *parent = nullptr);
     ~DeckCreatorWidget();
 signals:
-    void newDeck(QLocale native, QLocale target, std::string name);
+    void newDeck(QLocale native, QLocale target, QString name);
     void abortNewDeck();
 
 private slots:

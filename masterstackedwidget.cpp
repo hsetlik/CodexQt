@@ -38,7 +38,7 @@ void MasterStackedWidget::switchToPhraseInput()
 
 void MasterStackedWidget::openDeckWithName(QString name)
 {
-    currentDeck.reset(new Deck(name.toStdString()));
+    currentDeck.reset(new Deck(name));
     //! note this is only here for debuging
     currentDeck->pushBackDueDates(3);
     auto cardsDue = currentDeck->numDueToday();
@@ -49,6 +49,8 @@ void MasterStackedWidget::openDeckWithName(QString name)
     phraseScreen = new PhraseInputForm(this);
     editorScreen = new InputWidget(this);
     addWidget(editorScreen);
+    addWidget(phraseScreen);
+    setCurrentWidget(phraseScreen);
     connect(deckScreen, &DeckWidget::goToInputScreen, this, &MasterStackedWidget::switchToPhraseInput);
     connect(phraseScreen, &PhraseInputForm::getPairList, editorScreen, &InputWidget::prepareEditorsFor);
     connect(phraseScreen, &PhraseInputForm::getPairList, this, &MasterStackedWidget::switchToCardEditors);
@@ -56,18 +58,18 @@ void MasterStackedWidget::openDeckWithName(QString name)
     connect(deckScreen, &DeckWidget::studyScreenWith, this, &MasterStackedWidget::switchToStudyView);
 }
 
-void MasterStackedWidget::createNewDeck(QLocale native, QLocale target, std::string name)
+void MasterStackedWidget::createNewDeck(QLocale native, QLocale target, QString name)
 {
     printf("Native Locale is: %s\n", native.nativeCountryName().toStdString().c_str());
     printf("Target Locale is: %s\n", target.nativeCountryName().toStdString().c_str());
-    printf("Deck Name is: %s\n", name.c_str());
+    //printf("Deck Name is: %s\n", name);
     auto sDeckFile = name + ".json";
-    QString deckFileName = sDeckFile.c_str();
+    QString deckFileName = sDeckFile;
     QFile loadFile(deckFileName);
     if(!loadFile.open(QIODevice::ReadWrite | QIODevice::Truncate))
         printf("File not loaded\n");
     QJsonObject deckInfo;
-    deckInfo["DeckName"] = name.c_str();
+    deckInfo["DeckName"] = name;
     deckInfo["NativeLocale"] = (int)native.language();
     deckInfo["TargetLocale"] = (int)target.language();
     QJsonArray array;

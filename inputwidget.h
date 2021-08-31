@@ -9,14 +9,14 @@ class WordLabel : public QLabel
 {
     Q_OBJECT
 public:
-    WordLabel(std::string txt, PhrasePair* parentPair, QWidget* parentWidget) :
+    WordLabel(QString txt, PhrasePair* parentPair, QWidget* parentWidget) :
         QLabel(parentWidget),
         linkedPair(parentPair),
         backgroundColor(QColor(80, 80, 80)),
         hoverBackground(QColor(100, 100, 100)),
         mouseIsOver(false)
     {
-        QString label = txt.c_str();
+        QString label = txt;
         setFrameStyle(QFrame::Panel);
         setText(label);
     }
@@ -40,10 +40,10 @@ public:
     virtual ~PhraseWidget() {}
     const QString content;
     PhrasePair* const linkedPair;
-    WordLabel* labelWidget(std::string word);
-    bool containsWord(std::string word);
+    WordLabel* labelWidget(QString word);
+    bool containsWord(QString word);
     // this is pure virtual because words on the upper row connect from the bottom, lower row connect from the top
-    virtual QPointF getConnectionPointFor(std::string word)=0;
+    virtual QPointF getConnectionPointFor(QString word)=0;
 private:
     std::vector<QLabel*> addedLabels;
 protected:
@@ -60,7 +60,7 @@ public:
     NPhraseWidget(const QString& fullPhrase, PhrasePair* p, QWidget *parent = nullptr);
     void dropEvent(QDropEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
-    QPointF getConnectionPointFor(std::string word) override;
+    QPointF getConnectionPointFor(QString word) override;
 };
 
 class TPhraseWidget : public PhraseWidget
@@ -70,7 +70,7 @@ public:
     void dropEvent(QDropEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseDoubleClickEvent(QMouseEvent*) override;
-    QPointF getConnectionPointFor(std::string word) override;
+    QPointF getConnectionPointFor(QString word) override;
 };
 //==========================================================================================
 class PhrasePairWidget :

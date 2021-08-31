@@ -23,9 +23,8 @@ PhraseWidget::PhraseWidget(const QString& fullPhrase, PhrasePair* p, QWidget *pa
     QWidget(parent),
     linkedPair(p)
 {
-    auto sPhrase = fullPhrase.toStdString();
-    auto exp = std::regex("\\w+");
-    auto words = stdu::matchesAsVector(sPhrase, exp);
+    auto exp = QRegExp("\\w+");
+    auto words = RegexUtil::regexMatches(fullPhrase, exp);
     int x = 5;
     int y = 5;
     for(auto& word : words)
@@ -41,23 +40,23 @@ PhraseWidget::PhraseWidget(const QString& fullPhrase, PhrasePair* p, QWidget *pa
     setAcceptDrops(true);
 }
 
-WordLabel* PhraseWidget::labelWidget(std::string inputWord)
+WordLabel* PhraseWidget::labelWidget(QString inputWord)
 {
     for(auto w : addedLabels)
     {
         auto word = dynamic_cast<WordLabel*>(w);
-        if(word->text().toStdString() == inputWord)
+        if(word->text() == inputWord)
             return word;
 
     }
     return nullptr;
 }
-bool PhraseWidget::containsWord(std::string input)
+bool PhraseWidget::containsWord(QString input)
 {
     for(auto w : addedLabels)
     {
         auto word = dynamic_cast<WordLabel*>(w);
-        if(word->text().toStdString() == input)
+        if(word->text() == input)
             return true;
 
     }
@@ -107,7 +106,7 @@ void NPhraseWidget::mousePressEvent(QMouseEvent *event)
         return;
     if(event->button() == Qt::RightButton)
     {
-        auto nativeWord = child->text().toStdString();
+        auto nativeWord = child->text();
         linkedPair->removeNtaPairByNative(nativeWord);
     }
     else
@@ -135,14 +134,11 @@ void NPhraseWidget::dropEvent(QDropEvent *event)
     WordLabel* child = dynamic_cast<WordLabel*>(childAt(event->pos()));
     if(child == nullptr)
         return;
-
-    auto sNative = child->text().toStdString();
-    auto sTarget = event->mimeData()->text().toStdString();
-
-    printf("Adding target: %s, native: %s\n", sTarget.c_str(), sNative.c_str());
+    auto sNative = child->text();
+    auto sTarget = event->mimeData()->text();
     linkedPair->addNtaPair(sNative, sTarget);
 }
-QPointF NPhraseWidget::getConnectionPointFor(std::string word)
+QPointF NPhraseWidget::getConnectionPointFor(QString word)
 {
     auto label = labelWidget(word);
     if(label == nullptr)
@@ -164,7 +160,7 @@ void TPhraseWidget::mousePressEvent(QMouseEvent *event)
         return;
     if(event->button() == Qt::RightButton)
     {
-        auto targetWord = child->text().toStdString();
+        auto targetWord = child->text();
         linkedPair->removeNtaPairByTarget(targetWord);
     }
     else
@@ -191,13 +187,12 @@ void TPhraseWidget::dropEvent(QDropEvent *event)
     WordLabel* child = dynamic_cast<WordLabel*>(childAt(event->pos()));
     if(child == nullptr)
         return;
-    auto sTarget = child->text().toStdString();
-    auto sNative = event->mimeData()->text().toStdString();
-    printf("Adding target: %s, native: %s\n", sTarget.c_str(), sNative.c_str());
+    auto sTarget = child->text();
+    auto sNative = event->mimeData()->text();
     if(!containsWord(sNative))
         linkedPair->addNtaPair(sNative, sTarget);
 }
-QPointF TPhraseWidget::getConnectionPointFor(std::string word)
+QPointF TPhraseWidget::getConnectionPointFor(QString word)
 {
     auto label = labelWidget(word);
     if(label == nullptr)
@@ -214,7 +209,7 @@ void TPhraseWidget::mouseDoubleClickEvent(QMouseEvent* event)
     if(wordToToggle == nullptr)
         return;
     auto qWord = wordToToggle->text();
-    auto sWord = qWord.toStdString();
+    auto sWord = qWord;
     if(wordToToggle == nullptr)
         return;
     if(!linkedPair->hasCloze(sWord))
@@ -237,8 +232,8 @@ PhrasePairWidget::PhrasePairWidget(PhrasePair* pair, QWidget* parent) :
     targetPhrase(nullptr)
 {
     pair->addListener(this);
-    QString nativeQ = linkedPair->nativePhrase.fullPhrase.c_str();
-    QString targetQ = linkedPair->targetPhrase.fullPhrase.c_str();
+    QString nativeQ = linkedPair->nativePhrase.fullPhrase;
+    QString targetQ = linkedPair->targetPhrase.fullPhrase;
     nativePhrase = new NPhraseWidget(nativeQ, linkedPair, this);
     targetPhrase = new TPhraseWidget(targetQ, linkedPair, this);
     auto layout = new QVBoxLayout;
@@ -302,8 +297,8 @@ void InputWidget::advancePhrasePair()
     auto& pairToAdd = allPairs[pairIndex];
     currentPhrasePair.reset(new PhrasePairWidget(&pairToAdd, this));
     ui->verticalLayout->addWidget(&*currentPhrasePair);
-    std::string currentCards = "Cards Added: " + std::to_string(totalCardsAdded);
-    ui->numCardsLabel->setText(currentCards.c_str());
+    QString currentCards = "Cards Added: " + QString::number(totalCardsAdded);
+    ui->numCardsLabel->setText(currentCards);
     if(pairIndex == (int)allPairs.size() - 1)
         ui->finishButton->setVisible(true);
     else
@@ -331,8 +326,8 @@ void InputWidget::on_prevButton_clicked()
     auto& pairToAdd = allPairs[pairIndex];
     currentPhrasePair.reset(new PhrasePairWidget(&pairToAdd, this));
     ui->verticalLayout->addWidget(&*currentPhrasePair);
-    std::string currentCards = "Cards Added: " + std::to_string(totalCardsAdded);
-    ui->numCardsLabel->setText(currentCards.c_str());
+    QString currentCards = "Cards Added: " + QString::number(totalCardsAdded);
+    ui->numCardsLabel->setText(currentCards);
 }
 void InputWidget::on_nextButton_clicked()
 {

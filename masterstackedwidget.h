@@ -35,7 +35,7 @@ private slots:
         setCurrentIndex(0);
         deckScreen->updateLabels();
     }
-    void createNewDeck(QLocale native, QLocale target, std::string name);
+    void createNewDeck(QLocale native, QLocale target, QString name);
 public slots:
     void finishAddingCards(QJsonArray pairs);
     void openDeckWithName(QString name);

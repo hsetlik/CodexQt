@@ -22,8 +22,8 @@ void DeckWidget::on_addButton_clicked()
 
 void DeckWidget::updateLabels()
 {
-    QString name = linkedDeck->getName().c_str();
-    QString sNumDue = std::to_string(linkedDeck->numDueToday()).c_str();
+    QString name = linkedDeck->getName();
+    QString sNumDue = QString::number(linkedDeck->numDueToday());
     ui->cardsDueValue->setText(sNumDue);
     ui->nameValue->setText(name);
 }

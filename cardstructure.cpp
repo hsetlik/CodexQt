@@ -1,6 +1,6 @@
 #include "cardstructure.h"
 #include <memory>
-NtaCard::NtaCard(std::string native, std::string target, PhrasePair* parent) :
+NtaCard::NtaCard(QString native, QString target, PhrasePair* parent) :
     Card(parent, CardType::NTA),
     nativeWord(native),
     targetWord(target)
@@ -13,13 +13,13 @@ NtaCard::NtaCard(QJsonObject& obj) :
 {
     //printf("Creating NTA from JSON\n");
     auto qNative = obj["NativeWord"].toString();
-    nativeWord = qNative.toStdString();
+    nativeWord = qNative;
     auto qTarget = obj["TargetWord"].toString();
-    targetWord = qTarget.toStdString();
+    targetWord = qTarget;
     auto qDateString = obj["DateNextDue"].toString();
     dateNextDue = QDateTime::fromString(qDateString);
 }
-ClozeCard::ClozeCard(std::string toRemove, PhrasePair* parent) :
+ClozeCard::ClozeCard(QString toRemove, PhrasePair* parent) :
     Card(parent, CardType::Cloze),
     clozeSentence(" "),
     answer(toRemove)
@@ -27,13 +27,10 @@ ClozeCard::ClozeCard(std::string toRemove, PhrasePair* parent) :
     fullTarget = parent->targetPhrase.fullPhrase;
     fullNative = parent->nativePhrase.fullPhrase;
     clozeSentence = fullTarget;
-    auto clozeIdx = clozeSentence.find(answer);
-    if(clozeIdx != std::string::npos)
+    auto clozeIdx = clozeSentence.indexOf(answer);
+    for(int i = (int)clozeIdx; i < (int)(clozeIdx + answer.length()); ++i)
     {
-        for(int i = (int)clozeIdx; i < (int)(clozeIdx + answer.length()); ++i)
-        {
-            clozeSentence[i] = ' ';
-        }
+        clozeSentence[i] = ' ';
     }
 }
 ClozeCard::ClozeCard(QJsonObject& obj) :
@@ -42,19 +39,15 @@ ClozeCard::ClozeCard(QJsonObject& obj) :
     answer("")
 {
     //printf("Creating Cloze from JSON\n");
-    answer = obj["ClozeWord"].toString().toStdString();
-    auto qTarget = obj["FullTarget"].toString();
-    fullTarget = qTarget.toStdString();
+    answer = obj["ClozeWord"].toString();
+    fullTarget = obj["FullTarget"].toString();
     auto pairId = obj["ParentPairId"].toString();
-    fullNative = pairId.remove(qTarget).toStdString();
+    fullNative = pairId.remove(fullTarget);
     clozeSentence = fullTarget;
-    auto clozeIdx = clozeSentence.find(answer);
-    if(clozeIdx != std::string::npos)
+    auto clozeIdx = clozeSentence.indexOf(answer);
+    for(int i = (int)clozeIdx; i < (int)(clozeIdx + answer.length()); ++i)
     {
-        for(int i = (int)clozeIdx; i < (int)(clozeIdx + answer.length()); ++i)
-        {
-            clozeSentence[i] = ' ';
-        }
+        clozeSentence[i] = ' ';
     }
     auto qDateString = obj["DateNextDue"].toString();
     dateNextDue = QDateTime::fromString(qDateString);
@@ -68,8 +61,8 @@ FullCard::FullCard(PhrasePair* parent) :
 FullCard::FullCard(QJsonObject& obj) :
     Card(obj)
 {
-    fullNative = obj["NativePhrase"].toString().toStdString();
-    fullTarget = obj["TargetPhrase"].toString().toStdString();
+    fullNative = obj["NativePhrase"].toString();
+    fullTarget = obj["TargetPhrase"].toString();
     auto qDateString = obj["DateNextDue"].toString();
     dateNextDue = QDateTime::fromString(qDateString);
 }
@@ -79,8 +72,8 @@ QJsonObject NtaCard::getJson()
     {
         {"CardType", "NTA"},
         {"ParentPairId", parentPairId},
-        {"NativeWord", nativeWord.c_str()},
-        {"TargetWord", targetWord.c_str()},
+        {"NativeWord", nativeWord},
+        {"TargetWord", targetWord},
         {"DateNextDue", dateNextDue.toString()},
         {"TimesAnswered", timesAnswered},
         {"LastAnswer", lastAnswer}
@@ -93,8 +86,8 @@ QJsonObject ClozeCard::getJson()
     {
         {"CardType", "Cloze"},
         {"ParentPairId", parentPairId},
-        {"FullTarget", fullTarget.c_str()},
-        {"ClozeWord", answer.c_str()},
+        {"FullTarget", fullTarget},
+        {"ClozeWord", answer},
         {"DateNextDue", dateNextDue.toString()},
         {"TimesAnswered", timesAnswered},
         {"LastAnswer", lastAnswer}
@@ -107,8 +100,8 @@ QJsonObject FullCard::getJson()
     {
         {"CardType", "Full"},
         {"ParentPairId", parentPairId},
-        {"NativePhrase", fullNative.c_str()},
-        {"TargetPhrase", fullTarget.c_str()},
+        {"NativePhrase", fullNative},
+        {"TargetPhrase", fullTarget},
         {"DateNextDue", dateNextDue.toString()},
         {"TimesAnswered", timesAnswered},
         {"LastAnswer", lastAnswer}
@@ -136,9 +129,9 @@ PhrasePairCards::PhrasePairCards(PhrasePair* pair) :
 PhrasePairCards::PhrasePairCards(QJsonObject& obj) :
     full(nullptr)
 {
-    pairId = obj["PhrasePairId"].toString().toStdString();
-    fullNative = obj["NativePhrase"].toString().toStdString();
-    fullTarget = obj["TargetPhrase"].toString().toStdString();
+    pairId = obj["PhrasePairId"].toString();
+    fullNative = obj["NativePhrase"].toString();
+    fullTarget = obj["TargetPhrase"].toString();
     auto ntaArray = obj["NtaCards"].toArray();
     for(int i = 0; i < ntaArray.size(); ++i)
     {
@@ -216,9 +209,9 @@ QJsonObject PhrasePairCards::getPairJson()
 {
     QJsonObject obj
     {
-        {"PhrasePairId", pairId.c_str()},
-        {"NativePhrase", fullNative.c_str()},
-        {"TargetPhrase", fullTarget.c_str()}
+        {"PhrasePairId", pairId},
+        {"NativePhrase", fullNative},
+        {"TargetPhrase", fullTarget}
     };
     obj["NtaCards"] = getNtaJsons();
     obj["ClozeCards"] = getClozeJsons();
@@ -227,12 +220,12 @@ QJsonObject PhrasePairCards::getPairJson()
     return obj;
 }
 //===============================================================================
-Deck::Deck(std::string name) :
+Deck::Deck(QString name) :
     deckName(name)
 {
     //1. determine the deck file name
     auto sDeckFile = deckName + ".json";
-    QString deckFileName = sDeckFile.c_str();
+    QString deckFileName = sDeckFile;
     //2. load file into ByteArray and by extension JSON
     QFile loadFile(deckFileName);
     if(!loadFile.open(QIODevice::ReadWrite))
@@ -272,7 +265,7 @@ void Deck::saveToFile()
 {
     //1. determine the deck file name
     auto sDeckFile = deckName + ".json";
-    QString deckFileName = sDeckFile.c_str();
+    QString deckFileName = sDeckFile;
     //2. load file into ByteArray and by extension JSON
     QFile loadFile(deckFileName);
     if(!loadFile.open(QIODevice::ReadWrite | QIODevice::Truncate))
@@ -314,7 +307,7 @@ QJsonObject Deck::getDeckAsObject()
 {
     QJsonObject obj
     {
-        {"DeckName", deckName.c_str()},
+        {"DeckName", deckName},
         {"NativeLocale", (int)nativeLocale.language()},
         {"TargetLocale", (int)targetLocale.language()},
         {"PhrasePairs", getPairJsons()}

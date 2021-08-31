@@ -1,5 +1,5 @@
 #include "datastructures.h"
-PhrasePair::PhrasePair(std::string native, std::string target) :
+PhrasePair::PhrasePair(QString native, QString target) :
     nativePhrase(native, this),
     targetPhrase(target, this),
     includeFull(false),
@@ -15,34 +15,33 @@ PhrasePair::PhrasePair(const PhrasePair& other) :
 }
 
 PhrasePair::PhrasePair(QJsonObject& obj) :
-    nativePhrase(obj["NativePhrase"].toString().toStdString(), this),
-    targetPhrase(obj["TargetPhrase"].toString().toStdString(), this)
+    nativePhrase(obj["NativePhrase"].toString(), this),
+    targetPhrase(obj["TargetPhrase"].toString(), this)
 {
     auto ntaArray = obj["NtaCards"].toArray();
     for(auto card : ntaArray)
     {
         auto cardObject = card.toObject();
-        auto sNative = cardObject["NativeWord"].toString().toStdString();
-        auto sTarget = cardObject["TargetWord"].toString().toStdString();
+        auto sNative = cardObject["NativeWord"].toString();
+        auto sTarget = cardObject["TargetWord"].toString();
         addNtaPair(sNative, sTarget);
     }
     auto clozeArray = obj["ClozeCards"].toArray();
     for(auto card : clozeArray)
     {
         auto cardObject = card.toObject();
-        auto sCloze = cardObject["ClozeWord"].toString().toStdString();
-        addCloze(sCloze);
+        auto sCloze = cardObject["ClozeWord"].toString();
     }
 }
-void PhrasePair::addNtaPair(std::string nativeString, std::string targetString)
+void PhrasePair::addNtaPair(QString nativeString, QString targetString)
 {
-    printf("Adding pair: %s, %s\n", nativeString.c_str(), targetString.c_str());
+    //printf("Adding pair: %s, %s\n", nativeString, targetString);
     ntaPairs[nativeString] = targetString;
     totalNumCards++;
     pingListeners();
 }
 
-void PhrasePair::removeNtaPairByNative(std::string nativeWord)
+void PhrasePair::removeNtaPairByNative(QString nativeWord)
 {
    for(auto it = ntaPairs.begin(); it != ntaPairs.end(); it++)
    {
@@ -56,7 +55,7 @@ void PhrasePair::removeNtaPairByNative(std::string nativeWord)
    }
 
 }
-void PhrasePair::removeNtaPairByTarget(std::string targetWord)
+void PhrasePair::removeNtaPairByTarget(QString targetWord)
 {
    for(auto it = ntaPairs.begin(); it != ntaPairs.end(); it++)
    {
@@ -69,7 +68,7 @@ void PhrasePair::removeNtaPairByTarget(std::string targetWord)
        }
    }
 }
-void PhrasePair::removeCloze(std::string word)
+void PhrasePair::removeCloze(QString word)
 {
     for(auto it = clozeWords.begin(); it != clozeWords.end(); it++)
     {
@@ -82,7 +81,7 @@ void PhrasePair::removeCloze(std::string word)
         }
     }
 }
-bool PhrasePair::hasCloze(std::string word)
+bool PhrasePair::hasCloze(QString word)
 {
     for(auto& cWord : clozeWords)
     {
@@ -103,7 +102,7 @@ void PhrasePair::pingListeners()
         list->phraseChanged(this);
 }
 
-std::string PhrasePair::getJsonIdString()
+QString PhrasePair::getJsonIdString()
 {
      return nativePhrase.fullPhrase + targetPhrase.fullPhrase;
 }

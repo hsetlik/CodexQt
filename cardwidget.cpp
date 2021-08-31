@@ -16,10 +16,10 @@ NtaContent::NtaContent(Card* card, QWidget* parent) :
     layout(nullptr)
 {
     printf("\nNew Nta Content\n");
-    targetStr = card->getFrontData().c_str();
+    targetStr = card->getFrontData();
     printf("Target: %s\n", targetStr.toStdString().c_str());
-    nativeStr = card->getBackData().c_str();
-    printf("Native: %s\n", card->getBackData().c_str());
+    nativeStr = card->getBackData();
+    printf("Native: %s\n", card->getBackData().toStdString().c_str());
     targetLabel = new QLabel(targetStr, this);
     nativeLabel = new QLabel(nativeStr, this);
     targetLabel->setAttribute(Qt::WA_DeleteOnClose);
@@ -50,15 +50,15 @@ ClozeContent::ClozeContent(Card* _card, QWidget* parent) :
     //auto layout = new QHBoxLayout;
     for(auto& word : tWords)
     {
-        auto label = new QLabel(word.c_str(), this);
-        printf("Cloze label for word: %s\n", word.c_str());
+        auto label = new QLabel(word, this);
+        //printf("Cloze label for word: %s\n", word);
         label->move(x, y);
         label->show();
         label->setAttribute(Qt::WA_DeleteOnClose);
         x += label->width() + 2;
         if(word == clozeWord)
         {
-            printf("Cloze word is: %s\n", word.c_str());
+            //printf("Cloze word is: %s\n", word);
             clozeBox = new QLineEdit(this);
             clozeBox->setGeometry(label->x(), label->y(), label->width(), label->height());
             clozeBox->show();
@@ -71,7 +71,7 @@ ClozeContent::ClozeContent(Card* _card, QWidget* parent) :
     auto nativeWords = stdu::matchesAsVector(card->getFullNative(), std::regex("\\w+"));
     for(auto& word : nativeWords)
     {
-        auto label = new QLabel(word.c_str(), this);
+        auto label = new QLabel(word, this);
         label->move(x, y);
         label->show();
         label->setAttribute(Qt::WA_DeleteOnClose);
@@ -97,11 +97,11 @@ FullContent::FullContent(Card* card, QWidget* parent) :
 {
     int y = 5;
     int x = 5;
-    fullTarget = new QLabel(card->getFrontData().c_str(), this);
+    fullTarget = new QLabel(card->getFrontData(), this);
     fullTarget->move(x, y);
     fullTarget->show();
     y += fullTarget->height() * 2;
-    fullNative = new QLabel(card->getBackData().c_str(), this);
+    fullNative = new QLabel(card->getBackData(), this);
     fullNative->move(x, y);
     fullNative->show();
     fullNative->setVisible(false);
