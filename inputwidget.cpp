@@ -292,11 +292,6 @@ void InputWidget::advancePhrasePair()
     }
      ++pairIndex;
     ui->verticalLayout->removeWidget(&*currentPhrasePair);
-    if(pairIndex >= (int)allPairs.size())
-    {
-        ui->finishButton->setVisible(true);
-        return;
-    }
     printf("Displaying Pair Number %d\n", pairIndex);
     auto& pairToAdd = allPairs[pairIndex];
     currentPhrasePair.reset(new PhrasePairWidget(&pairToAdd, this));
@@ -304,7 +299,10 @@ void InputWidget::advancePhrasePair()
     QString currentCards = "Cards Added: " + QString::number(totalCardsAdded);
     ui->numCardsLabel->setText(currentCards);
     if(pairIndex == (int)allPairs.size() - 1)
-        ui->finishButton->setVisible(true);
+    {
+         ui->finishButton->setVisible(true);
+         ui->nextButton->setEnabled(false);
+    }
     else
         ui->finishButton->setVisible(false);
 }
@@ -345,7 +343,10 @@ void InputWidget::on_fullBox_stateChanged(int)
 }
 void InputWidget::on_finishButton_clicked()
 {
-    //printf("Sending %d new pairs\n", (int)createdCardSets.size());
+    if(currentPhrasePair != nullptr)
+    {
+        createdCardSets.push_back(PhrasePairCards(currentPhrasePair->linkedPair));
+    }
     Q_EMIT returnNewPairCards(getPairCardsAsArray());
 }
 void InputWidget::on_exitButton_clicked()

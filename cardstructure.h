@@ -98,12 +98,24 @@ struct NtaCard : public Card
 public:
     NtaCard(QString native, QString target, PhrasePair* parent);
     NtaCard(QJsonObject& obj);
+    NtaCard getInverse()
+    {
+        NtaCard card(*this);
+        card.invert();
+        return card;
+    }
     QString getFrontData() override {return nativeWord; }
     QString getBackData() override {return targetWord; }
     QJsonObject getJson() override;
 private:
     QString nativeWord;
     QString targetWord;
+    void invert()
+    {
+        auto oldNative = nativeWord;
+        nativeWord = targetWord;
+        targetWord = oldNative;
+    }
 };
 //=================================================================================
 struct ClozeCard : public Card
