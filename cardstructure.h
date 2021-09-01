@@ -21,7 +21,9 @@ struct Card
     Card(PhrasePair* pair, CardType type) :
         cardType(type),
         timesAnswered(0),
-        lastAnswer(0)
+        lastAnswer(0),
+        easeLevel(2.5f),
+        intervalDays(1)
     {
         dateNextDue = QDateTime::currentDateTime();
         parentPairId = pair->getJsonIdString();
@@ -33,6 +35,8 @@ struct Card
         parentPairId = obj["ParentPairId"].toString();
         timesAnswered = obj["TimesAnswered"].toInt();
         lastAnswer = obj["LastAnswer"].toInt();
+        easeLevel = obj["EaseLevel"].toDouble();
+        intervalDays = obj["IntervalDays"].toInt();
     }
     static CardType getCardType(QJsonObject& obj)
     {
@@ -90,6 +94,8 @@ protected:
     QString parentPairId;
     int timesAnswered;
     int lastAnswer;
+    double easeLevel;
+    int intervalDays;
 };
 //=================================================================================
 struct NtaCard : public Card

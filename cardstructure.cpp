@@ -76,7 +76,9 @@ QJsonObject NtaCard::getJson()
         {"TargetWord", targetWord},
         {"DateNextDue", dateNextDue.toString()},
         {"TimesAnswered", timesAnswered},
-        {"LastAnswer", lastAnswer}
+        {"LastAnswer", lastAnswer},
+        {"EaseLevel", easeLevel},
+        {"IntervalDays", intervalDays}
     };
     return obj;
 }
@@ -90,7 +92,9 @@ QJsonObject ClozeCard::getJson()
         {"ClozeWord", answer},
         {"DateNextDue", dateNextDue.toString()},
         {"TimesAnswered", timesAnswered},
-        {"LastAnswer", lastAnswer}
+        {"LastAnswer", lastAnswer},
+        {"EaseLevel", easeLevel},
+        {"IntervalDays", intervalDays}
     };
     return obj;
 }
@@ -104,7 +108,9 @@ QJsonObject FullCard::getJson()
         {"TargetPhrase", fullTarget},
         {"DateNextDue", dateNextDue.toString()},
         {"TimesAnswered", timesAnswered},
-        {"LastAnswer", lastAnswer}
+        {"LastAnswer", lastAnswer},
+        {"EaseLevel", easeLevel},
+        {"IntervalDays", intervalDays}
     };
     return obj;
 }
