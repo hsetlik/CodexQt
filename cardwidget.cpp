@@ -137,8 +137,8 @@ void CardViewer::nextCard()
     }
     else
     {
-        //emit a signal here to exit study mode
-        emit finishStudyMode();
+        //Q_EMIT a signal here to exit study mode
+        Q_EMIT finishStudyMode();
     }
 }
 void CardViewer::repeatCard()
@@ -149,7 +149,7 @@ void CardViewer::repeatCard()
 void CardViewer::flip()
 {
     currentContent->flip();
-    emit cardFlipped();
+    Q_EMIT cardFlipped();
 }
 void CardViewer::addContentForCard(Card* card)
 {
@@ -250,7 +250,7 @@ void CardWidget::submitCard()
 }
 void CardWidget::finishStudying()
 {
-    emit dueCardsFinished();
+    Q_EMIT dueCardsFinished();
 }
 void CardWidget::setButtonDayValues(int l1, int l2, int l3)
 {

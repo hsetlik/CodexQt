@@ -89,13 +89,6 @@ private:
     bool includeFull;
     int totalNumCards;
 };
-
-
-
-
-
-
-
 #endif // DATASTRUCTURES_H
 
 

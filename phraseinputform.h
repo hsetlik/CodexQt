@@ -16,17 +16,17 @@ public:
     explicit PhraseInputForm(QWidget *parent = nullptr);
     ~PhraseInputForm();
     PhrasePair newPairFromFields();
-public slots:
+public Q_SLOTS:
     void on_addButton_clicked();
 
     void on_backButton_clicked();
 
     void on_createSetupButton_clicked();
-signals:
+Q_SIGNALS:
     void getPairList(std::vector<PhrasePair>& pairs);
     void exitToDeck();
 
-private slots:
+private Q_SLOTS:
     void on_exitButton_clicked();
 
 private:

@@ -56,12 +56,12 @@ void PhraseInputForm::addDummyPairs(int pairsToAdd)
 void PhraseInputForm::on_createSetupButton_clicked()
 {
     //addDummyPairs();
-    emit getPairList(addedPairs);
+    Q_EMIT getPairList(addedPairs);
 }
 
 
 void PhraseInputForm::on_exitButton_clicked()
 {
-    emit exitToDeck();
+    Q_EMIT exitToDeck();
 }
 

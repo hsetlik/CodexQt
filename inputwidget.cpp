@@ -346,10 +346,10 @@ void InputWidget::on_fullBox_stateChanged(int)
 void InputWidget::on_finishButton_clicked()
 {
     //printf("Sending %d new pairs\n", (int)createdCardSets.size());
-    emit returnNewPairCards(getPairCardsAsArray());
+    Q_EMIT returnNewPairCards(getPairCardsAsArray());
 }
 void InputWidget::on_exitButton_clicked()
 {
-    emit exitToDeck();
+    Q_EMIT exitToDeck();
 }
 

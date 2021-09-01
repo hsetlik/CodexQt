@@ -48,16 +48,13 @@ TRANSLATIONS += \
     CodexQt_ru_RU.ts
 CONFIG += lrelease
 CONFIG += embed_translations
+CONFIG += no_keywords
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+INCLUDEPATH += /Library/Frameworks/Python.framework/Versions/3.9/Headers
 
 
-
-macx: LIBS += -L$$PWD/../../pythonqt/lib/ -lPythonQt_QtAll-Qt5-Python3.9.3.2.0
-
-INCLUDEPATH += $$PWD/../../pythonqt
-DEPENDPATH += $$PWD/../../pythonqt

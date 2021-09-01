@@ -29,10 +29,10 @@ void DeckCreatorWidget::on_createButton_clicked()
     auto tLocale = QLocale((QLocale::Language)langs[sTarget]);
     auto name = ui->deckNameEdit->text();
     //printf("New deck is called: %s\n", name.c_str());
-    emit newDeck(nLocale, tLocale, name);
+    Q_EMIT newDeck(nLocale, tLocale, name);
 }
 void DeckCreatorWidget::on_cancelButton_clicked()
 {
-    emit abortNewDeck();
+    Q_EMIT abortNewDeck();
 }
 

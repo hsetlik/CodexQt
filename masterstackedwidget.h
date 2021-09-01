@@ -19,7 +19,7 @@ public:
         }
         return false;
     }
-private slots:
+private Q_SLOTS:
     void switchToDeckCreatorView()
     {
         deckCreator = new DeckCreatorWidget(this);
@@ -36,7 +36,7 @@ private slots:
         deckScreen->updateLabels();
     }
     void createNewDeck(QLocale native, QLocale target, QString name);
-public slots:
+public Q_SLOTS:
     void finishAddingCards(QJsonArray pairs);
     void openDeckWithName(QString name);
 private:
@@ -47,7 +47,7 @@ private:
     CardWidget* studyScreen;
     PhraseInputForm* phraseScreen;
     InputWidget* editorScreen;
-signals:
+Q_SIGNALS:
 
 };
 

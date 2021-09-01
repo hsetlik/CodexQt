@@ -18,12 +18,11 @@ class DeckListWidget : public QWidget
 public:
     explicit DeckListWidget(QWidget *parent = nullptr);
     ~DeckListWidget();
-
-public slots:
-    void on_newDeckButton_clicked() { emit launchNewDeckDialog(); }
+public Q_SLOTS:
+    void on_newDeckButton_clicked() { Q_EMIT launchNewDeckDialog(); }
     void on_manageDecksButon_clicked();
     void deckButtonClicked();
-signals:
+Q_SIGNALS:
     void launchNewDeckDialog();
     void openDeck(QString name);
 private:

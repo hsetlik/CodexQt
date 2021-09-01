@@ -41,7 +41,7 @@ void DeckListWidget::deckButtonClicked()
 {
     auto button = qobject_cast<QPushButton*>(sender());
     auto name = button->text();
-    emit openDeck(name);
+    Q_EMIT openDeck(name);
 }
 
 

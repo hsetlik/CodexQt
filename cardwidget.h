@@ -15,9 +15,9 @@ public:
     void keyPressEvent(QKeyEvent* e) override
     {
         if(e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter)
-            emit checkAnswer();
+            Q_EMIT checkAnswer();
     }
-signals:
+Q_SIGNALS:
     void checkAnswer();
 };
 //==========================================================
@@ -67,9 +67,9 @@ public:
     void nextCard();
     void repeatCard();
     std::vector<int> lengthsForCard();
-public slots:
+public Q_SLOTS:
     void flip();
-signals:
+Q_SIGNALS:
     void cardFlipped();
     void finishStudyMode();
 private:
@@ -95,9 +95,9 @@ public:
     void nextCard();
 
     ~CardWidget();
-signals:
+Q_SIGNALS:
     void dueCardsFinished();
-private slots:
+private Q_SLOTS:
     void on_button1_clicked();
 
     void on_button2_clicked();

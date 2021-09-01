@@ -17,10 +17,10 @@ public:
     Deck* const linkedDeck;
     void updateLabels();
     ~DeckWidget();
-signals:
+Q_SIGNALS:
     void goToInputScreen();
     void studyScreenWith();
-private slots:
+private Q_SLOTS:
     void on_addButton_clicked();
 
     void on_studyButton_clicked();

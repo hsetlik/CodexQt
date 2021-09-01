@@ -17,7 +17,7 @@ DeckWidget::~DeckWidget()
 
 void DeckWidget::on_addButton_clicked()
 {
-    emit goToInputScreen();
+    Q_EMIT goToInputScreen();
 }
 
 void DeckWidget::updateLabels()
@@ -34,6 +34,6 @@ void DeckWidget::updateLabels()
 }
 void DeckWidget::on_studyButton_clicked()
 {
-    emit studyScreenWith();
+    Q_EMIT studyScreenWith();
 }
 

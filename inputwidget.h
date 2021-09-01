@@ -49,7 +49,7 @@ private:
 protected:
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dragMoveEvent(QDragMoveEvent *event) override;
-signals:
+Q_SIGNALS:
 
 };
 //==========================================================================================
@@ -110,14 +110,14 @@ public:
         return arr;
     }
 
-public slots:
+public Q_SLOTS:
     void prepareEditorsFor(std::vector<PhrasePair>& pairs);
 
-signals:
+Q_SIGNALS:
     void returnNewPairCards(QJsonArray cards);
     void exitToDeck();
 
-private slots:
+private Q_SLOTS:
     void on_prevButton_clicked();
     void on_nextButton_clicked();
     void on_fullBox_stateChanged(int arg1);
