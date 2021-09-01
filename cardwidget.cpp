@@ -48,7 +48,6 @@ ClozeContent::ClozeContent(Card* _card, QWidget* parent) :
     auto clozeWord = card->getBackData();
     int x= 5;
     int y = 5;
-    //auto layout = new QHBoxLayout;
     for(auto& word : tWords)
     {
         auto label = new QLabel(word, this);

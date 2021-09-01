@@ -27,7 +27,6 @@ DeckListWidget::DeckListWidget(QWidget *parent) :
         ui->decksVBox->addWidget(button);
         connect(button, &QPushButton::clicked, this, &DeckListWidget::deckButtonClicked);
     }
-
 }
 DeckListWidget::~DeckListWidget()
 {
@@ -35,6 +34,7 @@ DeckListWidget::~DeckListWidget()
 }
 void DeckListWidget::on_manageDecksButon_clicked()
 {
+    //todo: set up a deck manager
 
 }
 void DeckListWidget::deckButtonClicked()

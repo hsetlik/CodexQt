@@ -52,6 +52,7 @@ void MasterStackedWidget::openDeckWithName(QString name)
     connect(deckScreen, &DeckWidget::goToInputScreen, this, &MasterStackedWidget::switchToPhraseInput);
     connect(phraseScreen, &PhraseInputForm::getPairList, editorScreen, &InputWidget::prepareEditorsFor);
     connect(phraseScreen, &PhraseInputForm::getPairList, this, &MasterStackedWidget::switchToCardEditors);
+    connect(phraseScreen, &PhraseInputForm::exitToDeck, this, &MasterStackedWidget::switchToDeckView);
     connect(editorScreen, &InputWidget::returnNewPairCards, this, &MasterStackedWidget::finishAddingCards);
     connect(deckScreen, &DeckWidget::studyScreenWith, this, &MasterStackedWidget::switchToStudyView);
 }

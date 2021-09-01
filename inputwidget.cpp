@@ -348,3 +348,8 @@ void InputWidget::on_finishButton_clicked()
     //printf("Sending %d new pairs\n", (int)createdCardSets.size());
     emit returnNewPairCards(getPairCardsAsArray());
 }
+void InputWidget::on_exitButton_clicked()
+{
+    emit exitToDeck();
+}
+

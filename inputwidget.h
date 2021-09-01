@@ -115,12 +115,16 @@ public slots:
 
 signals:
     void returnNewPairCards(QJsonArray cards);
+    void exitToDeck();
 
 private slots:
     void on_prevButton_clicked();
     void on_nextButton_clicked();
     void on_fullBox_stateChanged(int arg1);
     void on_finishButton_clicked();
+
+    void on_exitButton_clicked();
+
 private:
     std::vector<PhrasePair> allPairs;
     std::unique_ptr<PhrasePairWidget> currentPhrasePair;

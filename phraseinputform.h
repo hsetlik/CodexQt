@@ -24,6 +24,10 @@ public slots:
     void on_createSetupButton_clicked();
 signals:
     void getPairList(std::vector<PhrasePair>& pairs);
+    void exitToDeck();
+
+private slots:
+    void on_exitButton_clicked();
 
 private:
     Ui::PhraseInputForm *ui;

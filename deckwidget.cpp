@@ -23,7 +23,12 @@ void DeckWidget::on_addButton_clicked()
 void DeckWidget::updateLabels()
 {
     QString name = linkedDeck->getName();
-    QString sNumDue = QString::number(linkedDeck->numDueToday());
+    auto numDue = linkedDeck->numDueToday();
+    if(numDue < 1)
+        ui->studyButton->setEnabled(false);
+    else
+        ui->studyButton->setEnabled(true);
+    QString sNumDue = QString::number(numDue);
     ui->cardsDueValue->setText(sNumDue);
     ui->nameValue->setText(name);
 }

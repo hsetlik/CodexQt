@@ -59,3 +59,9 @@ void PhraseInputForm::on_createSetupButton_clicked()
     emit getPairList(addedPairs);
 }
 
+
+void PhraseInputForm::on_exitButton_clicked()
+{
+    emit exitToDeck();
+}
+
