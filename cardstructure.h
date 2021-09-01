@@ -3,6 +3,7 @@
 
 #include "datastructures.h"
 #include <QtWidgets>
+
 /*
  * TODO LIST updated 8/29:
  * -Add comparison for text entry cards (cloze and full)

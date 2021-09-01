@@ -38,10 +38,10 @@ private:
 class ClozeContent : public CardContent
 {
     Q_OBJECT
+
 public:
     explicit ClozeContent(Card* card, QWidget* parent=nullptr);
     void flip() override;
-
 private:
     std::vector<QLabel*> targetLabels;
     std::vector<QLabel*> nativeLabels;

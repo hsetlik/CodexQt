@@ -42,7 +42,8 @@ ClozeContent::ClozeContent(Card* _card, QWidget* parent) :
 {
     auto card = dynamic_cast<ClozeCard*>(_card);
     printf("Creating cloze content. . . \n");
-    auto tWords = stdu::matchesAsVector(card->getFullTarget(), std::regex("\\w+"));
+    QString fullTarget = card->getFullTarget();
+    auto tWords = fullTarget.split(QRegExp("\\s+"));
     printf("Target phrase has %d words\n", (int)tWords.size());
     auto clozeWord = card->getBackData();
     int x= 5;
@@ -58,7 +59,7 @@ ClozeContent::ClozeContent(Card* _card, QWidget* parent) :
         x += label->width() + 2;
         if(word == clozeWord)
         {
-            //printf("Cloze word is: %s\n", word);
+            qDebug() << "Cloze Word: " << word;
             clozeBox = new QLineEdit(this);
             clozeBox->setGeometry(label->x(), label->y(), label->width(), label->height());
             clozeBox->show();
@@ -81,8 +82,8 @@ ClozeContent::ClozeContent(Card* _card, QWidget* parent) :
 }
 void ClozeContent::flip()
 {
-    //auto answerStr = clozeBox->text();
-    clozeBox->setVisible(false);
+    if(clozeBox != nullptr)
+        clozeBox->setVisible(false);
     for(auto l : targetLabels)
     {
         l->setVisible(true);
