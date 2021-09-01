@@ -20,6 +20,7 @@ SOURCES += \
     mainwindow.cpp \
     masterstackedwidget.cpp \
     phraseinputform.cpp \
+    pyttsengine.cpp \
     stlutility.cpp
 
 HEADERS += \
@@ -33,6 +34,7 @@ HEADERS += \
     mainwindow.h \
     masterstackedwidget.h \
     phraseinputform.h \
+    pyttsengine.h \
     stlutility.h
 
 FORMS += \

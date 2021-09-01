@@ -3,7 +3,7 @@
 
 #include "datastructures.h"
 #include <QtWidgets>
-#include "extern/pybind11/include/pybind11/pybind11.h"
+
 /*
  * TODO LIST updated 9/1:
  * -Add comparison for text entry cards (cloze and full)
