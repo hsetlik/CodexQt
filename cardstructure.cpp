@@ -1,5 +1,32 @@
 #include "cardstructure.h"
 #include <memory>
+//===================================================================
+//Implements the SuperMemo SM-2 spaced repitition algorithm described here: https://en.wikipedia.org/wiki/SuperMemo#Algorithms
+void Card::updateWithAnswer(int answer)
+{
+    // 0 <= answer < 5
+    if(answer > 0)
+    {
+        if(timesAnswered == 0)
+            intervalDays = 1;
+        else if(timesAnswered == 1)
+            intervalDays = 6;
+        else
+            intervalDays = (int)std::floor(intervalDays * easeLevel);
+        ++timesAnswered;
+    }
+    else
+    {
+        timesAnswered = 0;
+        intervalDays = 1;
+    }
+    //adjust the ease level appropriately based on the answer
+    auto dEase = (0.1f - (5 - answer) * (0.08f + (5 - answer) * 0.02f));
+    easeLevel += dEase;
+    if(easeLevel< 1.3f)
+        easeLevel = 1.3f;
+}
+//===================================================================
 NtaCard::NtaCard(QString native, QString target, PhrasePair* parent) :
     Card(parent, CardType::NTA),
     nativeWord(native),

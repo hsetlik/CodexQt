@@ -73,12 +73,7 @@ struct Card
         };
         return obj;
     }
-    virtual void updateWithAnswer(int answer)
-    {
-        lastAnswer = answer;
-        ++timesAnswered;
-        setDueIn(daysToDelay(timesAnswered, lastAnswer));
-    }
+    void updateWithAnswer(int answer);
     void setDueIn(int numDays)
     {
         dateNextDue = dateNextDue.addDays(numDays);
