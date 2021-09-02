@@ -15,6 +15,7 @@ SOURCES += \
     deckcreatorwidget.cpp \
     decklistwidget.cpp \
     deckwidget.cpp \
+    googletts.cpp \
     inputwidget.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -30,6 +31,7 @@ HEADERS += \
     deckcreatorwidget.h \
     decklistwidget.h \
     deckwidget.h \
+    googletts.h \
     inputwidget.h \
     mainwindow.h \
     masterstackedwidget.h \

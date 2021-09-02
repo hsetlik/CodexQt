@@ -1,6 +1,7 @@
 from gtts import gTTS
 import pyttsx3
 import urllib.request
+
 #here, we need to check for an internet connection to determine whether we will use gTTS (online, more realistic)
 #or pyttsx3 (offline)
 def has_connection(host='http://google.com'):
